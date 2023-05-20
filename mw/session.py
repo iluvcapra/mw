@@ -30,10 +30,13 @@ class Session:
 
     def print_stack(self):
         for i, frame in reversed(list(enumerate(self.stack[0:3]))):
-            if i == 0:
-                self.print_frame(i, frame)
-            else:
-                self.print_frame(i, frame)
+            self.print_frame(i, frame)
+
+    def print_head(self):
+        waveform = WaveformData.create_waveform_data(self.stack[0].segment, time_bins=60)
+        waveform_txt = unicode_waveform(waveform.value_pairs, height=8)
+        print(waveform_txt)
+
 
     def get_input(self):
         return input("> ")
@@ -41,11 +44,22 @@ class Session:
     def handle_command(self, command):
         if command == 'q':
             return False
+        elif command in ['h','?','help']:
+            print("q: quit")
+            print("h: show this message")
+            print("s: print stack")
+            print("p: print head of stack")
+        elif command == 's':
+            self.print_stack()
+        elif command == 'p':
+            self.print_head()
+
+ 
         return True
 
     def run(self):
+        self.print_stack()
         while True:
-            self.print_stack()
             command = self.get_input()
             if not self.handle_command(command):
                 break
