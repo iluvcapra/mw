@@ -62,6 +62,8 @@ class Session:
         self.in_point = None
         self.out_point = None
         self.cursor = 0
+        self.display.view_start = 0
+        self.display.view_end = self.length()
 
     def split(self):
         if len(self.stack) > 0:
@@ -81,9 +83,6 @@ class Session:
     def play(self):
         if len(self.stack) > 0:
             play(self.stack[-1].segment)
-
-        
-        
 
     def length(self) -> Milliseconds:
         return max(map(lambda x: len(x.clip()), self.stack))
