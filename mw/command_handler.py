@@ -1,5 +1,6 @@
 import inspect
 from copy import deepcopy
+import readline
 
 def parse_numeric(base_value: int, val: str):
     if val[0] in ["+","-"] and val[1:].isdigit():
@@ -7,6 +8,14 @@ def parse_numeric(base_value: int, val: str):
     elif val.isdigit():
         base_value = int(val)
     return base_value
+
+
+def completion(partial: str, state: int) -> str:
+    obj = CommandHandler()
+
+    all = [name for name in dir(obj) if not f.startswith("__") and f != "handle"]
+    begin = [name for name in all if name.startswith(partial)]
+    return begin[state]
 
 
 class CommandHandler:

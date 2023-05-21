@@ -1,12 +1,11 @@
 from pydub import AudioSegment
-# from apeek import WaveformData, unicode_waveform
 
 from mw.types import Milliseconds
 from mw.display import Display
-from mw.command_handler import CommandHandler
+from mw.command_handler import CommandHandler, completion
 
 from typing import List, Optional 
-
+import readline
 
 class StackFrame:
     
@@ -43,6 +42,10 @@ class Session:
         self.out_point = None
         for segment in segments:
             self.push_sound(segment)
+        
+        readline.set_completer(completion)
+        readline.parse_and_bind("tab: complete")
+
 
     def push_sound(self, segment: AudioSegment):
         print(f"Pushing audio ({len(segment)} ms) onto stack...")
