@@ -37,15 +37,15 @@ class Display:
         waveform_txt = self.create_sized_text_waveform(frame.clip(), height=6)
         print(waveform_txt)
 
-    def print_stack(self, session: 'Session'):
-        if len(session.stack) > 0:
-            for i, frame in enumerate(reversed(session.stack[-3:])):
+    def print_stack(self, stack: 'Stack'):
+        if len(stack.entries) > 0:
+            for i, frame in enumerate(reversed(stack.entries[-3:])):
                 self.print_frame(i, frame)
-            print(f"Session length {session.length() / 1000.0} sec")
+            print(f"Session length {stack.length() / 1000.0} sec")
         else:
             print("Stack empty")
 
-    def print_head(self, session: 'Session'):
+    def print_head(self, stack: 'Stack'):
         if len(session.stack) > 0:
             self.print_frame_single(session.stack[-1])
             self.print_ruler(session.cursor, session.in_point, session.out_point)

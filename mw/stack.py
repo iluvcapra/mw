@@ -30,13 +30,13 @@ class StackFrame:
 
 
 class Stack:
-    stack: List[StackFrame]
+    entries: List[StackFrame]
     display: Display
     in_point: Optional[Milliseconds]
     out_point: Optional[Milliseconds]
 
     def __init__(self, segments : List[AudioSegment]):
-        self.stack = []
+        self.entries = []
         self.display = Display()
         self.cursor = 0
         self.in_point = None
@@ -50,14 +50,14 @@ class Stack:
 
     def push_sound(self, segment: AudioSegment):
         print(f"Pushing audio ({len(segment)} ms) onto stack...")
-        self.stack.append(StackFrame(segment=segment))
+        self.entries.append(StackFrame(segment=segment))
         self.display.view_start = 0
         self.display.view_end = self.length()
     
     def crop_head(self):
-        if len(self.stack) > 0:
-            frame = self.stack[-1]
-            self.stack[-1].crop(self.in_point or 0, 
+        if len(self.entries) > 0:
+            frame = self.entries[-1]
+            self.entries[-1].crop(self.in_point or 0, 
                                 self.out_point or len(frame.clip()))
         self.in_point = None
         self.out_point = None
@@ -66,13 +66,13 @@ class Stack:
         self.display.view_end = self.length()
 
     def split(self):
-        if len(self.stack) > 0:
-            to_split = self.stack[-1].segment
+        if len(self.entries) > 0:
+            to_split = self.entries[-1].segment
             a = to_split[0:self.cursor]
             b = to_split[self.cursor:]
-            self.stack.pop()
-            self.stack.append(StackFrame(a))
-            self.stack.append(StackFrame(b))
+            self.entries.pop()
+            self.entries.append(StackFrame(a))
+            self.entries.append(StackFrame(b))
 
         self.cursor = 0
         self.in_point = None
@@ -81,11 +81,11 @@ class Stack:
         self.display.view_end = self.length()
 
     def play(self):
-        if len(self.stack) > 0:
-            play(self.stack[-1].segment)
+        if len(self.entries) > 0:
+            play(self.entries[-1].segment)
 
     def length(self) -> Milliseconds:
-        return max(map(lambda x: len(x.clip()), self.stack))
+        return max(map(lambda x: len(x.clip()), self.entries))
 
     def get_input(self):
         selection = []
