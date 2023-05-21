@@ -22,7 +22,8 @@ classifiers = [
 dependencies = [
   "numpy ~= 1.24.3",
   "pydub ~= 0.25.1",
-  "apeek ~= 0.1.0"
+  "apeek ~= 0.1.0",
+  "gnureadline ~= 8.1.2"
 ]
 keywords = [
     'waveform', 

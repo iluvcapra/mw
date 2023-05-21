@@ -1,5 +1,6 @@
 import inspect
 from copy import deepcopy
+from typing import List
 
 import mw
 from mw.types import Milliseconds
@@ -11,46 +12,47 @@ def parse_numeric(base_value: int, val: str):
         base_value = int(val)
     return base_value
 
-
-def completion(partial: str, state: int) -> str:
-    obj = CommandHandler()
-
-    all = [name for name in dir(obj) if not name.startswith("_")]
-    begin = [name for name in all if name.startswith(partial)]
-    return begin[state]
-
+#
+# def completion(obj: 'CommandHandler', partial: str, state: int) -> str:
+#     all = [name for name in dir(obj) if not name.startswith("_")]
+#     begin = [name for name in all if name.startswith(partial)]
+#     return begin[state]
+#
 
 class CommandHandler:
     """
     The command handler implements commands originating from the prompt. The App
     parses command lines into words and then hands these to the handler's _handle method.
-    The first word is the command name, and a method with a matching name is searched in
-    CommandHandler's attributes. If a match isn't found, the "help"
-    """
-    @classmethod
-    def _handle(cls, app, words):
-        handler = cls()
-        if len(words) < 1:
-            handler.help(app)
-            return
+    The first word is the command name, and a attribute with a matching name is searched in
+    the CommandHandler instance. If a match isn't found, the "help" method is run.
 
-        if hasattr(handler, words[0]):
-            getattr(handler, words[0])(app, *words[1:])
+    If a match IS found, the corresponding attribute is called, with the App instance
+    passed as the first parameter. If any additional words were present on the command line, 
+    they are passed as strings afterward.
+
+    The help() method iterates through all the "normal" named attributes on the class 
+    and prints the docstring for each as the help text.
+    """
+    def _handle(self, app, words): 
+        if len(words) > 0 and hasattr(self, words[0]):
+            getattr(self, words[0])(app, *words[1:])
         else:
-            handler.help(app)
-    
+            self.help(app)
+
+    def _available_commands(self) -> List[str]:
+        return [f for f in dir(self) if not f.startswith("_")]
+
     def help(self, _ : 'mw.app.App'):
         "Print help"
-        for f in dir(self):
-            if not f.startswith("_"):
-                m = getattr(self, f)
-                argspec = inspect.signature(m)
-                if len(argspec.parameters) == 1:
-                    print(f"{f}: {m.__doc__}")
-                else:
-                    pnames = list(argspec.parameters)[1:] 
-                    pnames = "[" + ",".join(pnames) + "]"
-                    print(f"{f} {pnames} : {m.__doc__}")
+        for f in self._available_commands(): 
+            m = getattr(self, f)
+            argspec = inspect.signature(m)
+            if len(argspec.parameters) == 1:
+                print(f"{f}: {m.__doc__}")
+            else:
+                pnames = list(argspec.parameters)[1:] 
+                pnames = "[" + ",".join(pnames) + "]"
+                print(f"{f} {pnames} : {m.__doc__}")
 
     def stack(self, app: 'mw.app.App'):
         "Print the stack"
