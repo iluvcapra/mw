@@ -1,6 +1,6 @@
 import inspect
 from copy import deepcopy
-from typing import List
+from typing import List, Callable, Optional
 
 import mw
 from mw.types import Milliseconds
@@ -42,17 +42,27 @@ class CommandHandler:
     def _available_commands(self) -> List[str]:
         return [f for f in dir(self) if not f.startswith("_")]
 
+    def _partial_completion_handler(self) -> Callable[[str, int],Optional[str]]:
+        def _impl_autocomplete(partial: str, state: int) -> Optional[str]:
+            possible = [name for name in self._available_commands() if name.startswith(partial)]
+            if len(possible) > 0:
+                return possible[state]
+            else:
+                return None
+
+        return _impl_autocomplete
+
     def help(self, _ : 'mw.app.App'):
         "Print help"
         for f in self._available_commands(): 
             m = getattr(self, f)
             argspec = inspect.signature(m)
             if len(argspec.parameters) == 1:
-                print(f"{f}: {m.__doc__}")
+                print(f"{f:15}: {m.__doc__}")
             else:
                 pnames = list(argspec.parameters)[1:] 
                 pnames = "[" + ",".join(pnames) + "]"
-                print(f"{f} {pnames} : {m.__doc__}")
+                print(f"{f} {pnames}".ljust(15) + f": {m.__doc__}")
 
     def stack(self, app: 'mw.app.App'):
         "Print the stack"

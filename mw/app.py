@@ -19,16 +19,8 @@ class App:
         self.stack = Stack([])
         self.display = Display()
         self.command_handler = CommandHandler()
-        
-        def _impl_autocomplete(partial: str, state: int) -> Optional[str]:
-            possible = [name for name in self.command_handler._available_commands() if name.startswith(partial)]
-            # print(possible)
-            if len(possible) > 0:
-                return possible[state]
-            else:
-                return None
-
-        readline.set_completer(_impl_autocomplete)
+        completer =  self.command_handler._partial_completion_handler()
+        readline.set_completer(completer)
         readline.parse_and_bind("tab: complete")
 
 
