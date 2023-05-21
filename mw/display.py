@@ -30,7 +30,7 @@ class Display:
         return unicode_waveform(waveform.value_pairs, height=height)
 
     def print_frame(self, index, frame: 'StackFrame'):
-        waveform_txt = self.create_sized_text_waveform(frame.clip(), height=1)
+        waveform_txt = self.create_sized_text_waveform(frame.clip(), height=2)
         print(waveform_txt.ljust(self.max_waveform_width()) + f" {index:02}")
 
     def print_frame_single(self, frame: 'StackFrame'):

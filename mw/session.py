@@ -3,12 +3,13 @@ from pydub import AudioSegment
 
 from mw.types import Milliseconds
 from mw.display import Display
+from mw.command_handler import CommandHandler
 
-from collections import deque
-from typing import List, Optional
+from typing import List, Optional 
 
 
 class StackFrame:
+    
     segment: AudioSegment
 
     def __init__(self, segment: AudioSegment):
@@ -17,6 +18,12 @@ class StackFrame:
     def crop(self, start: Milliseconds, end: Milliseconds):
         assert end > start, "crop end must be > crop start"
         self.segment = self.segment[start:end]
+    
+    def insert_silence(self, duration: Milliseconds, at: Milliseconds):
+        a = self.segment[0:at]
+        b = self.segment[at:]
+        silence = AudioSegment.silent(duration=duration)
+        self.segment = a + silence + b 
 
     def clip(self) -> AudioSegment:
         return self.segment
@@ -56,66 +63,23 @@ class Session:
     def delay_head(self):
         pass
 
-    def parse_numeric(self, base_value: int, val: str):
-        if val[0] in ["+","-"] and val[1:].isdigit():
-            base_value += int(val)
-        elif val.isdigit():
-            base_value = int(val)
-        return base_value
-
     def length(self) -> Milliseconds:
         return max(map(lambda x: len(x.clip()), self.stack))
 
     def get_input(self):
         return input("> ")
-
+    
     def handle_command(self, command):
         words = command.split()
         if words[0] == 'q':
             return False
-        elif words[0] in ['h','?','help']:
-            print("q: quit")
-            print("cm [int]: set cursor pos (millis)")
-            print("i: set in point")
-            print("o: set out point")
-            print("x: clear in, out")
-            print("k: crop sound to in, out")
-            print("d []: delay start")
-            print("v: show view info")
-            print("h: show this message")
-            print("stack: print stack")
-            print("s: print head of stack")
-            print("p: pop stack")
-            print("setw [int]: set display width")
-        elif words[0] == 'stack':
-            self.display.print_stack(self)
-        elif words[0] == 's':
-            self.display.print_head(self)
-        elif words[0] == 'setw':
-            self.display.display_width = int(words[1])
-        elif words[0] == 'p':
-            self.stack.pop()
-        elif words[0] == 'cm':
-            self.cursor = self.parse_numeric(self.cursor, words[1])
-            self.cursor = min(self.cursor, self.length())
-            self.cursor = max(self.cursor, 0)
-            self.display.print_head(self)
-        elif words[0] == 'i':
-            self.in_point = self.cursor
-            self.display.print_head(self)
-        elif words[0] == 'o':
-            self.out_point = self.cursor
-            self.display.print_head(self)
-        elif words[0] == 'x':
-            self.in_point = None
-            self.out_point = None
-            self.display.print_head(self)
-        elif words[0] == 'k':
-            self.crop_head()
-        elif words[0] == 'd':
-            pass
-        elif words[0] == 'v':
-            self.display.show_view_info(self)
+        else:
+            CommandHandler.handle(self, words)
+
+        # elif words[0] == 'd':
+        #     pass
+        # elif words[0] == 'v':
+        #     self.display.show_view_info(self)
 
 
         return True
