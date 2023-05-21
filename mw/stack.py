@@ -5,20 +5,33 @@ from mw.types import Milliseconds
 from mw.display import Display
 from mw.command_handler import CommandHandler, completion
 
-from typing import List, Optional 
+from typing import List, Optional, cast 
 import readline
 
-class StackFrame:
-    
-    segment: AudioSegment
 
+class StackFrame: 
+    segment: AudioSegment
+    cursor: Milliseconds
+    in_point: Optional[Milliseconds]
+    out_point: Optional[Milliseconds]
+    
     def __init__(self, segment: AudioSegment):
-            self.segment = segment
+        self.segment = segment
+        self.cursor = Milliseconds(0)
+        self.in_point = None
+        self.out_point = None
     
     def crop(self, start: Milliseconds, end: Milliseconds):
         assert end > start, "crop end must be > crop start"
-        self.segment = self.segment[start:end]
-    
+        self.segment = cast(AudioSegment, self.segment[start:end])
+        self.in_point = None
+        self.out_point = None
+        self.cursor = Milliseconds(0)
+
+    def crop_to_selection(self):
+        self.crop(self.in_point or Milliseconds(0), 
+                  self.out_point or Milliseconds(len(self.segment)))
+
     def insert_silence(self, duration: Milliseconds, at: Milliseconds):
         a = self.segment[0:at]
         b = self.segment[at:]
@@ -31,45 +44,30 @@ class StackFrame:
 
 class Stack:
     entries: List[StackFrame]
-    display: Display
-    in_point: Optional[Milliseconds]
-    out_point: Optional[Milliseconds]
 
     def __init__(self, segments : List[AudioSegment]):
         self.entries = []
-        self.display = Display()
-        self.cursor = 0
-        self.in_point = None
-        self.out_point = None
         for segment in segments:
             self.push_sound(segment)
         
-        readline.set_completer(completion)
-        readline.parse_and_bind("tab: complete")
-
+    @property
+    def top(self) -> Optional[StackFrame]:
+        """Get the top of the stack safetly."""
+        if len(self.entries) > 0:
+            return self.entries[-1]
+        else:
+            return None
 
     def push_sound(self, segment: AudioSegment):
         print(f"Pushing audio ({len(segment)} ms) onto stack...")
         self.entries.append(StackFrame(segment=segment))
-        self.display.view_start = 0
-        self.display.view_end = self.length()
-    
-    def crop_head(self):
-        if len(self.entries) > 0:
-            frame = self.entries[-1]
-            self.entries[-1].crop(self.in_point or 0, 
-                                self.out_point or len(frame.clip()))
-        self.in_point = None
-        self.out_point = None
-        self.cursor = 0
-        self.display.view_start = 0
-        self.display.view_end = self.length()
+
 
     def split(self):
         if len(self.entries) > 0:
             to_split = self.entries[-1].segment
-            a = to_split[0:self.cursor]
-            b = to_split[self.cursor:]
+            a :AudioSegment = cast(AudioSegment, to_split[0:self.cursor])
+            b :AudioSegment = cast(AudioSegment, to_split[self.cursor:])
             self.entries.pop()
             self.entries.append(StackFrame(a))
             self.entries.append(StackFrame(b))
@@ -77,42 +75,55 @@ class Stack:
         self.cursor = 0
         self.in_point = None
         self.out_point = None
-        self.display.view_start = 0
-        self.display.view_end = self.length()
+        # self.display.view_start = 0
+        # self.display.view_end = self.length()
 
-    def play(self):
-        if len(self.entries) > 0:
-            play(self.entries[-1].segment)
 
     def length(self) -> Milliseconds:
-        return max(map(lambda x: len(x.clip()), self.entries))
+        if len(self.entries) > 0:
+            return Milliseconds(max(map(lambda x: len(x.clip()), self.entries)))
+        else:
+            return Milliseconds(0)
+
+ 
+class App:
+    display: Display
+    stack: Stack
+
+    def __init__(self):
+        self.stack = Stack([])
+        self.display = Display()
+        readline.set_completer(completion)
+        readline.parse_and_bind("tab: complete")
 
     def get_input(self):
         selection = []
-        if self.in_point is not None:
-            selection.append(f"[{self.in_point}")
+        if self.stack.top:
+            if self.stack.top.in_point:
+                selection.append(f"[{self.stack.top.in_point}")
 
-        if self.out_point is not None:
-            selection.append(f"{self.out_point}]")
-        
-        selection = "→".join(selection)
-        return input(f"{self.cursor}ms {selection}> ")
-    
+            if self.stack.top.out_point:
+                selection.append(f"{self.stack.top.out_point}]")
+            
+            selection = "→".join(selection)
+            return input(f"{self.stack.top.cursor}ms {selection}> ")
+        else:
+            return input(f"- > ")
+
     def handle_command(self, command):
         words = command.split()
         if words[0] == 'q':
             return False
         else:
-            CommandHandler.handle(self, words)
+            CommandHandler._handle(self, words)
 
         return True
 
     def run(self):
-        self.display.print_stack(self)
+        self.display.print_stack(self.stack)
         while True:
             command = self.get_input()
             if not self.handle_command(command):
                 break
 
-
-    
+   

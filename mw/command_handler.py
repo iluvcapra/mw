@@ -1,6 +1,8 @@
 import inspect
 from copy import deepcopy
-import readline
+
+import mw
+from mw.types import Milliseconds
 
 def parse_numeric(base_value: int, val: str):
     if val[0] in ["+","-"] and val[1:].isdigit():
@@ -13,29 +15,34 @@ def parse_numeric(base_value: int, val: str):
 def completion(partial: str, state: int) -> str:
     obj = CommandHandler()
 
-    all = [name for name in dir(obj) if not f.startswith("__") and f != "handle"]
+    all = [name for name in dir(obj) if not name.startswith("__") and name != "handle"]
     begin = [name for name in all if name.startswith(partial)]
     return begin[state]
 
 
 class CommandHandler:
-    
+    """
+    The command handler implements commands originating from the prompt. The App
+    parses command lines into words and then hands these to the handler's _handle method.
+    The first word is the command name, and a method with a matching name is searched in
+    CommandHandler's attributes. If a match isn't found, the "help"
+    """
     @classmethod
-    def handle(cls, session, words):
+    def _handle(cls, app, words):
         handler = cls()
         if len(words) < 1:
-            handler.help(session)
+            handler.help(app)
             return
 
         if hasattr(handler, words[0]):
-            getattr(handler, words[0])(session, *words[1:])
+            getattr(handler, words[0])(app, *words[1:])
         else:
-            handler.help(session)
+            handler.help(app)
     
-    def help(self, stack: 'Stack'):
+    def help(self, _ : 'mw.stack.App'):
         "Print help"
         for f in dir(self):
-            if not f.startswith("__") and f != "handle":
+            if not f.startswith("_"):
                 m = getattr(self, f)
                 argspec = inspect.signature(m)
                 if len(argspec.parameters) == 1:
@@ -45,121 +52,139 @@ class CommandHandler:
                     pnames = "[" + ",".join(pnames) + "]"
                     print(f"{f} {pnames} : {m.__doc__}")
 
-    def stack(self, stack: 'Stack'):
+    def stack(self, app: 'mw.stack.App'):
         "Print the stack"
-        stack.display.print_stack(stack)
+        app.display.print_stack(app.stack)
 
-    def cmills(self, stack: 'Stack', pos: str = "0"):
+    def cmills(self, app: 'mw.stack.App', pos: str = "0"):
         "Set/nudge cursor position in millis"
-        stack.cursor = parse_numeric(stack.cursor, pos)
-        stack.cursor = min(stack.cursor, stack.length())
-        stack.cursor = max(stack.cursor, 0)
-        stack.display.print_head(stack)
+        if app.stack.top:
+            app.stack.top.cursor = Milliseconds(parse_numeric(app.stack.top.cursor, pos))
+            app.stack.top.cursor = Milliseconds(min(app.stack.top.cursor, len(app.stack.top.segment)))
+            app.stack.top.cursor = Milliseconds(max(app.stack.top.cursor, 0))
+            app.display.print_head(app.stack)
 
-    def cbegin(self, stack: 'Stack'):
+    def cbegin(self, app: 'mw.stack.App'):
         "Set cursor to beginning of sound"
-        stack.cursor = 0
-        stack.display.print_head(stack)
+        if app.stack.top:
+            app.stack.top.cursor = Milliseconds(0)
+            
+        app.display.print_head(app.stack)
 
-    def cend(self, stack: 'Stack'):
+    def cend(self, app: 'mw.stack.App'):
         "Set cursor to end of sound"
-        if len(stack.stack) > 0:
-            stack.cursor = len(stack.stack[-1].segment)
+        if app.stack.top:
+            app.stack.top.cursor = Milliseconds(len(app.stack.top.segment))
         
-        stack.display.print_head(stack)
+        app.display.print_head(app.stack)
 
-    def show(self, stack: 'Stack'):
+    def show(self, app: 'mw.stack.App'):
         "Show the current sound"
-        stack.display.print_head(stack)
+        app.display.print_head(app.stack)
 
-    def i(self, stack: 'Stack', time = None):
+    def i(self, app: 'mw.stack.App', time = None):
         "Set in point"
-        new_time = stack.cursor
-        if time is not None:
-            new_time = parse_numeric(stack.in_point or 0, time)
+        if app.stack.top:
+            new_time = app.stack.top.cursor
+            if time:
+                new_time = parse_numeric(app.stack.top.in_point or 0, time)
+            
+            app.stack.top.in_point = Milliseconds(new_time)
+            app.display.print_head(app.stack)
 
-        stack.in_point = new_time
-        stack.display.print_head(stack)
-
-    def o(self, stack: 'Stack', time = None):
+    def o(self, app: 'mw.stack.App', time = None):
         "Set out point"
-        new_time = stack.cursor
-        if time is not None:
-            new_time = parse_numeric(stack.out_point or 0, time)
+        if app.stack.top:
+            new_time = app.stack.top.cursor
+            if time:
+                new_time = parse_numeric(app.stack.top.out_point or 0, time)
+            
+            app.stack.top.out_point = Milliseconds(new_time)
+            app.display.print_head(app.stack)
 
-        stack.out_point = new_time
-        stack.display.print_head(stack)
-
-    def setw(self, stack: 'Stack', width = "80"):
+    def setw(self, app: 'mw.stack.App', width = "80"):
         "Set columns width"
-        stack.display.display_width = int(width)
-        stack.display.print_head(stack)
+        app.display.display_width = int(width)
+        app.display.print_head(app.stack)
     
-    def dup(self, stack: 'Stack'):
+    def dup(self, app: 'mw.stack.App'):
         "Push a copy of the current sound onto the stack"
-        sound = deepcopy(stack.stack[-1].segment)
-        stack.push_sound(sound)
-        stack.display.print_stack(stack)
+        if app.stack.top:
+            sound = deepcopy(app.stack.top.segment)
+            app.stack.push_sound(sound)
+            app.display.print_stack(app.stack)
     
-    def swap(self, stack:'Stack'):
+    def swap(self, app:'mw.stack.App'):
         "Swap the top two sounds on the stack"
-        if len(stack.stack) > 1:
-            stack.stack[-1], stack.stack[-2] = \
-                stack.stack[-2], stack.stack[-1]
+        if len(app.stack.entries) > 1:
+            app.stack.entries[-1], app.stack.entries[-2] = \
+                app.stack.entries[-2], app.stack.entries[-1]
         
-        stack.display.print_stack(stack)
+        app.display.print_stack(app.stack)
 
-    def pop(self, stack:'Stack'):
+    def pop(self, app:'mw.stack.App'):
         "Pop the top sound on the stack, deleting it"
-        stack.stack.pop()
-        stack.display.print_stack(stack)
+        app.stack.entries.pop()
+        app.display.print_stack(app.stack)
     
-    def roll(self, stack:'Stack', count :str = "1"):
+    def roll(self, app:'mw.stack.App', count :str = "1"):
         "Roll the stack"
-        count = int(count)
-        count = count % len(stack.stack)
-        stack.stack = stack.stack[count:] + stack.stack[0:count]
+        if count.isdigit():
+            num = int(count)
+            num = num % len(app.stack.entries)
+            app.stack.entries = app.stack.entries[num:] + app.stack.entries[0:num]
+        else:
+            print(f"Parse error: \"{count}\" is not a number")
 
-    def crop(self, stack: 'Stack',):
+    def crop(self, app: 'mw.stack.App',):
         "Crop the sound to the in and out points"
-        stack.crop_head()
-        stack.display.print_head(stack)
-
-    def ci(self, stack: 'Stack'):
-        "Clear in point"
-        stack.in_point = None
-        stack.display.print_head(stack)
-
-    def co(self, stack:'Stack'):
-        "Clear out point"
-        stack.out_point = None
-        stack.display.print_head(stack)
-
-    def silence(self, stack:'Stack', dur: str):
-        "Insert silence at cursor"
-        if len(stack.stack) > 0 and dur.isdigit():
-            at = stack.cursor
-            stack.stack[-1].insert_silence(int(dur), at)
+        if app.stack.top:
+            app.stack.top.crop_to_selection()
         
-        stack.display.print_head(stack)
+        app.display.print_head(app.stack)
 
-    def split(self, stack:'Stack'):
+    def ci(self, app: 'mw.stack.App'):
+        "Clear in point"
+        if app.stack.top:
+            app.stack.top.in_point = None
+
+        app.display.print_head(app.stack)
+
+    def co(self, app:'mw.stack.App'):
+        "Clear out point"
+        if app.stack.top:
+            app.stack.top.out_point = None
+
+        app.display.print_head(app.stack)
+
+    def silence(self, app:'mw.stack.App', dur: str):
+        "Insert silence at cursor"
+        if dur.isdigit():
+            if app.stack.top:
+                at = app.stack.top.cursor
+                app.stack.top.insert_silence(Milliseconds(int(dur)), at)
+            
+            app.display.print_head(app.stack)
+        else:
+            print(f"Parse error: \"{dur}\" is not a number")
+
+    def split(self, app:'mw.stack.App'):
         "Split sound"
-        if len(stack.stack) > 0:
-            stack.split()
-        stack.display.print_stack(stack)
+        if app.stack.top:
+            app.stack.split()
+        app.display.print_stack(app.stack)
 
-    def fadein(self, stack:'Stack'):
+    def fadein(self, app:'mw.stack.App'):
         "Fade in from cilp start to cursor"
         pass
 
-    def fadeout(self, stack:'Stack'):
+    def fadeout(self, app:'mw.stack.App'):
         "Fade out from clip start to cursor"
         pass
 
-    def play(self, stack:'Stack'):
-        "Play the sound"
-        stack.play()
+    # def play(self, app:'mw.stack.App'):
+    #     "Play the sound"
+    #     app.play()
 
 
 
