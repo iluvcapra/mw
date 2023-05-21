@@ -8,18 +8,19 @@ import optparse
 import pydub
 
 from mw import __version__
-from mw.session import Session
+from mw.stack import Stack
 
 def main():
     print(f"mw v{__version__}")
-    print(f"(c) 2023 Jamie Hardt. All Rights Reserved")
+    print(f"(c) 2023 Jamie Hardt. All Rights Reserved.", flush=True)
     parser = optparse.OptionParser()
 
     (options, files) = parser.parse_args()
     
-    session = Session(segments=[])
+    session = Stack(segments=[])
 
     for file in files:
+        print(f"Reading audio file {file}...")
         audio = pydub.AudioSegment.from_file(file)
         session.push_sound(audio)
         

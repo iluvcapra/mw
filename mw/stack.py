@@ -29,7 +29,7 @@ class StackFrame:
         return self.segment
 
 
-class Session:
+class Stack:
     stack: List[StackFrame]
     display: Display
     in_point: Optional[Milliseconds]

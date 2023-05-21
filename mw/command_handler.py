@@ -32,7 +32,7 @@ class CommandHandler:
         else:
             handler.help(session)
     
-    def help(self, session: 'Session'):
+    def help(self, stack: 'Stack'):
         "Print help"
         for f in dir(self):
             if not f.startswith("__") and f != "handle":
@@ -45,121 +45,121 @@ class CommandHandler:
                     pnames = "[" + ",".join(pnames) + "]"
                     print(f"{f} {pnames} : {m.__doc__}")
 
-    def stack(self, session: 'Session'):
+    def stack(self, stack: 'Stack'):
         "Print the stack"
-        session.display.print_stack(session)
+        stack.display.print_stack(stack)
 
-    def cmills(self, session: 'Session', pos: str = "0"):
+    def cmills(self, stack: 'Stack', pos: str = "0"):
         "Set/nudge cursor position in millis"
-        session.cursor = parse_numeric(session.cursor, pos)
-        session.cursor = min(session.cursor, session.length())
-        session.cursor = max(session.cursor, 0)
-        session.display.print_head(session)
+        stack.cursor = parse_numeric(stack.cursor, pos)
+        stack.cursor = min(stack.cursor, stack.length())
+        stack.cursor = max(stack.cursor, 0)
+        stack.display.print_head(stack)
 
-    def cbegin(self, session: 'Session'):
+    def cbegin(self, stack: 'Stack'):
         "Set cursor to beginning of sound"
-        session.cursor = 0
-        session.display.print_head(session)
+        stack.cursor = 0
+        stack.display.print_head(stack)
 
-    def cend(self, session: 'Session'):
+    def cend(self, stack: 'Stack'):
         "Set cursor to end of sound"
-        if len(session.stack) > 0:
-            session.cursor = len(session.stack[-1].segment)
+        if len(stack.stack) > 0:
+            stack.cursor = len(stack.stack[-1].segment)
         
-        session.display.print_head(session)
+        stack.display.print_head(stack)
 
-    def show(self, session: 'Session'):
+    def show(self, stack: 'Stack'):
         "Show the current sound"
-        session.display.print_head(session)
+        stack.display.print_head(stack)
 
-    def i(self, session: 'Session', time = None):
+    def i(self, stack: 'Stack', time = None):
         "Set in point"
-        new_time = session.cursor
+        new_time = stack.cursor
         if time is not None:
-            new_time = parse_numeric(session.in_point or 0, time)
+            new_time = parse_numeric(stack.in_point or 0, time)
 
-        session.in_point = new_time
-        session.display.print_head(session)
+        stack.in_point = new_time
+        stack.display.print_head(stack)
 
-    def o(self, session: 'Session', time = None):
+    def o(self, stack: 'Stack', time = None):
         "Set out point"
-        new_time = session.cursor
+        new_time = stack.cursor
         if time is not None:
-            new_time = parse_numeric(session.out_point or 0, time)
+            new_time = parse_numeric(stack.out_point or 0, time)
 
-        session.out_point = new_time
-        session.display.print_head(session)
+        stack.out_point = new_time
+        stack.display.print_head(stack)
 
-    def setw(self, session: 'Session', width = "80"):
+    def setw(self, stack: 'Stack', width = "80"):
         "Set columns width"
-        session.display.display_width = int(width)
-        session.display.print_head(session)
+        stack.display.display_width = int(width)
+        stack.display.print_head(stack)
     
-    def dup(self, session: 'Session'):
+    def dup(self, stack: 'Stack'):
         "Push a copy of the current sound onto the stack"
-        sound = deepcopy(session.stack[-1].segment)
-        session.push_sound(sound)
-        session.display.print_stack(session)
+        sound = deepcopy(stack.stack[-1].segment)
+        stack.push_sound(sound)
+        stack.display.print_stack(stack)
     
-    def swap(self, session:'Session'):
+    def swap(self, stack:'Stack'):
         "Swap the top two sounds on the stack"
-        if len(session.stack) > 1:
-            session.stack[-1], session.stack[-2] = \
-                session.stack[-2], session.stack[-1]
+        if len(stack.stack) > 1:
+            stack.stack[-1], stack.stack[-2] = \
+                stack.stack[-2], stack.stack[-1]
         
-        session.display.print_stack(session)
+        stack.display.print_stack(stack)
 
-    def pop(self, session:'Session'):
+    def pop(self, stack:'Stack'):
         "Pop the top sound on the stack, deleting it"
-        session.stack.pop()
-        session.display.print_stack(session)
+        stack.stack.pop()
+        stack.display.print_stack(stack)
     
-    def roll(self, session:'Session', count :str = "1"):
+    def roll(self, stack:'Stack', count :str = "1"):
         "Roll the stack"
         count = int(count)
-        count = count % len(session.stack)
-        session.stack = session.stack[count:] + session.stack[0:count]
+        count = count % len(stack.stack)
+        stack.stack = stack.stack[count:] + stack.stack[0:count]
 
-    def crop(self, session: 'Session',):
+    def crop(self, stack: 'Stack',):
         "Crop the sound to the in and out points"
-        session.crop_head()
-        session.display.print_head(session)
+        stack.crop_head()
+        stack.display.print_head(stack)
 
-    def ci(self, session: 'Session'):
+    def ci(self, stack: 'Stack'):
         "Clear in point"
-        session.in_point = None
-        session.display.print_head(session)
+        stack.in_point = None
+        stack.display.print_head(stack)
 
-    def co(self, session:'Session'):
+    def co(self, stack:'Stack'):
         "Clear out point"
-        session.out_point = None
-        session.display.print_head(session)
+        stack.out_point = None
+        stack.display.print_head(stack)
 
-    def silence(self, session:'Session', dur: str):
+    def silence(self, stack:'Stack', dur: str):
         "Insert silence at cursor"
-        if len(session.stack) > 0 and dur.isdigit():
-            at = session.cursor
-            session.stack[-1].insert_silence(int(dur), at)
+        if len(stack.stack) > 0 and dur.isdigit():
+            at = stack.cursor
+            stack.stack[-1].insert_silence(int(dur), at)
         
-        session.display.print_head(session)
+        stack.display.print_head(stack)
 
-    def split(self, session:'Session'):
+    def split(self, stack:'Stack'):
         "Split sound"
-        if len(session.stack) > 0:
-            session.split()
-        session.display.print_stack(session)
+        if len(stack.stack) > 0:
+            stack.split()
+        stack.display.print_stack(stack)
 
-    def fadein(self, session:'Session'):
+    def fadein(self, stack:'Stack'):
         "Fade in from cilp start to cursor"
         pass
 
-    def fadeout(self, session:'Session'):
+    def fadeout(self, stack:'Stack'):
         "Fade out from clip start to cursor"
         pass
 
-    def play(self, session:'Session'):
+    def play(self, stack:'Stack'):
         "Play the sound"
-        session.play()
+        stack.play()
 
 
 
