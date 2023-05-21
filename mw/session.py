@@ -60,14 +60,19 @@ class Session:
         self.cursor = 0
         self.display.print_head(self)
 
-    def delay_head(self):
-        pass
-
     def length(self) -> Milliseconds:
         return max(map(lambda x: len(x.clip()), self.stack))
 
     def get_input(self):
-        return input("> ")
+        selection = []
+        if self.in_point is not None:
+            selection.append(f"[{self.in_point}")
+
+        if self.out_point is not None:
+            selection.append(f"{self.out_point}]")
+        
+        selection = "→".join(selection)
+        return input(f"{self.cursor}ms {selection}> ")
     
     def handle_command(self, command):
         words = command.split()
@@ -75,12 +80,6 @@ class Session:
             return False
         else:
             CommandHandler.handle(self, words)
-
-        # elif words[0] == 'd':
-        #     pass
-        # elif words[0] == 'v':
-        #     self.display.show_view_info(self)
-
 
         return True
 
