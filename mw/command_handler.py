@@ -138,6 +138,11 @@ class CommandHandler:
         
         session.display.print_head(session)
 
+    def split(self, session:'Session'):
+        "Split sound"
+        if len(session.stack) > 0:
+            session.split()
+        session.display.print_stack(session)
 
 
 

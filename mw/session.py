@@ -62,6 +62,22 @@ class Session:
         self.out_point = None
         self.cursor = 0
 
+    def split(self):
+        if len(self.stack) > 0:
+            to_split = self.stack[-1].segment
+            a = to_split[0:self.cursor]
+            b = to_split[self.cursor:]
+            self.stack.pop()
+            self.stack.append(StackFrame(a))
+            self.stack.append(StackFrame(b))
+
+        self.cursor = 0
+        self.in_point = None
+        self.out_point = None
+        self.display.view_start = 0
+        self.display.view_end = self.length()
+
+
     def length(self) -> Milliseconds:
         return max(map(lambda x: len(x.clip()), self.stack))
 
