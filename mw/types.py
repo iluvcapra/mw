@@ -1,4 +1,4 @@
-from typing import List, NewType, Optional
+from typing import NewType
 
 Milliseconds = NewType('Milliseconds', int)
 

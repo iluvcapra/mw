@@ -11,13 +11,21 @@ class StackFrame:
     cursor: Milliseconds
     in_point: Optional[Milliseconds]
     out_point: Optional[Milliseconds]
-    
+    view_start: Milliseconds
+    view_end: Milliseconds
+
     def __init__(self, segment: AudioSegment):
         self.segment = segment
         self.cursor = Milliseconds(0)
         self.in_point = None
         self.out_point = None
-    
+        self.view_start = Milliseconds(0)
+        self.view_end = Milliseconds( len(segment) )
+
+    def view_length(self) -> Milliseconds:
+        assert self.view_end > self.view_start
+        return Milliseconds( self.view_end - self.view_start )
+
     def crop(self, start: Milliseconds, end: Milliseconds):
         assert end > start, "crop end must be > crop start"
         self.segment = cast(AudioSegment, self.segment[start:end])
@@ -30,10 +38,14 @@ class StackFrame:
                   self.out_point or Milliseconds(len(self.segment)))
 
     def insert_silence(self, duration: Milliseconds, at: Milliseconds):
+        assert at < len(self.segment), "Insertion point past end of sound"
         a = self.segment[0:at]
         b = self.segment[at:]
         silence = AudioSegment.silent(duration=duration)
         self.segment = a + silence + b 
+    
+    def clip_for_view(self) -> AudioSegment:
+        return cast(AudioSegment, self.segment[self.view_start:self.view_end])
 
     def clip(self) -> AudioSegment:
         return self.segment
