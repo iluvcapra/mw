@@ -151,6 +151,15 @@ class CommandHandler:
 
     def fadein(self, session:'Session'):
         "Fade in from cilp start to cursor"
+        pass
+
+    def fadeout(self, session:'Session'):
+        "Fade out from clip start to cursor"
+        pass
+
+    def play(self, session:'Session'):
+        "Play the sound"
+        session.play()
 
 
 

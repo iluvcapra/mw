@@ -1,4 +1,5 @@
 from pydub import AudioSegment
+from pydub.playback import play
 
 from mw.types import Milliseconds
 from mw.display import Display
@@ -77,6 +78,12 @@ class Session:
         self.display.view_start = 0
         self.display.view_end = self.length()
 
+    def play(self):
+        if len(self.stack) > 0:
+            play(self.stack[-1].segment)
+
+        
+        
 
     def length(self) -> Milliseconds:
         return max(map(lambda x: len(x.clip()), self.stack))
