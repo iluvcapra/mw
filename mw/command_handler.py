@@ -32,7 +32,7 @@ class CommandHandler:
                 if len(argspec.parameters) == 1:
                     print(f"{f}: {m.__doc__}")
                 else:
-                    pnames = list(argspec.parameters)[1:] #map(lambda x: x.name, argspec.parameters)
+                    pnames = list(argspec.parameters)[1:] 
                     pnames = "[" + ",".join(pnames) + "]"
                     print(f"{f} {pnames} : {m.__doc__}")
 
