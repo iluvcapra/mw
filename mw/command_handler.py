@@ -49,7 +49,7 @@ class CommandHandler:
         "Print the stack"
         session.display.print_stack(session)
 
-    def cm(self, session: 'Session', pos: str = "0"):
+    def cmills(self, session: 'Session', pos: str = "0"):
         "Set/nudge cursor position in millis"
         session.cursor = parse_numeric(session.cursor, pos)
         session.cursor = min(session.cursor, session.length())
@@ -67,7 +67,6 @@ class CommandHandler:
             session.cursor = len(session.stack[-1].segment)
         
         session.display.print_head(session)
-
 
     def show(self, session: 'Session'):
         "Show the current sound"
@@ -114,6 +113,12 @@ class CommandHandler:
         "Pop the top sound on the stack, deleting it"
         session.stack.pop()
         session.display.print_stack(session)
+    
+    def roll(self, session:'Session', count :str = "1"):
+        "Roll the stack"
+        count = int(count)
+        count = count % len(session.stack)
+        session.stack = session.stack[count:] + session.stack[0:count]
 
     def crop(self, session: 'Session',):
         "Crop the sound to the in and out points"
@@ -143,6 +148,10 @@ class CommandHandler:
         if len(session.stack) > 0:
             session.split()
         session.display.print_stack(session)
+
+    def fadein(self, session:'Session'):
+        "Fade in from cilp start to cursor"
+
 
 
 
