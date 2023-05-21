@@ -8,7 +8,7 @@ import optparse
 import pydub
 
 from mw import __version__
-from mw.stack import App
+from mw.app import App
 from mw.types import Milliseconds
 
 def main():

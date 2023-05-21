@@ -15,7 +15,7 @@ def parse_numeric(base_value: int, val: str):
 def completion(partial: str, state: int) -> str:
     obj = CommandHandler()
 
-    all = [name for name in dir(obj) if not name.startswith("__") and name != "handle"]
+    all = [name for name in dir(obj) if not name.startswith("_")]
     begin = [name for name in all if name.startswith(partial)]
     return begin[state]
 
@@ -39,7 +39,7 @@ class CommandHandler:
         else:
             handler.help(app)
     
-    def help(self, _ : 'mw.stack.App'):
+    def help(self, _ : 'mw.app.App'):
         "Print help"
         for f in dir(self):
             if not f.startswith("_"):
@@ -52,11 +52,11 @@ class CommandHandler:
                     pnames = "[" + ",".join(pnames) + "]"
                     print(f"{f} {pnames} : {m.__doc__}")
 
-    def stack(self, app: 'mw.stack.App'):
+    def stack(self, app: 'mw.app.App'):
         "Print the stack"
         app.display.print_stack(app.stack)
 
-    def cmills(self, app: 'mw.stack.App', pos: str = "0"):
+    def cmills(self, app: 'mw.app.App', pos: str = "0"):
         "Set/nudge cursor position in millis"
         if app.stack.top:
             app.stack.top.cursor = Milliseconds(parse_numeric(app.stack.top.cursor, pos))
@@ -64,25 +64,25 @@ class CommandHandler:
             app.stack.top.cursor = Milliseconds(max(app.stack.top.cursor, 0))
             app.display.print_head(app.stack)
 
-    def cbegin(self, app: 'mw.stack.App'):
+    def cbegin(self, app: 'mw.app.App'):
         "Set cursor to beginning of sound"
         if app.stack.top:
             app.stack.top.cursor = Milliseconds(0)
             
         app.display.print_head(app.stack)
 
-    def cend(self, app: 'mw.stack.App'):
+    def cend(self, app: 'mw.app.App'):
         "Set cursor to end of sound"
         if app.stack.top:
             app.stack.top.cursor = Milliseconds(len(app.stack.top.segment))
         
         app.display.print_head(app.stack)
 
-    def show(self, app: 'mw.stack.App'):
+    def show(self, app: 'mw.app.App'):
         "Show the current sound"
         app.display.print_head(app.stack)
 
-    def i(self, app: 'mw.stack.App', time = None):
+    def i(self, app: 'mw.app.App', time = None):
         "Set in point"
         if app.stack.top:
             new_time = app.stack.top.cursor
@@ -92,7 +92,7 @@ class CommandHandler:
             app.stack.top.in_point = Milliseconds(new_time)
             app.display.print_head(app.stack)
 
-    def o(self, app: 'mw.stack.App', time = None):
+    def o(self, app: 'mw.app.App', time = None):
         "Set out point"
         if app.stack.top:
             new_time = app.stack.top.cursor
@@ -102,19 +102,19 @@ class CommandHandler:
             app.stack.top.out_point = Milliseconds(new_time)
             app.display.print_head(app.stack)
 
-    def setw(self, app: 'mw.stack.App', width = "80"):
+    def setw(self, app: 'mw.app.App', width = "80"):
         "Set columns width"
         app.display.display_width = int(width)
         app.display.print_head(app.stack)
     
-    def dup(self, app: 'mw.stack.App'):
+    def dup(self, app: 'mw.app.App'):
         "Push a copy of the current sound onto the stack"
         if app.stack.top:
             sound = deepcopy(app.stack.top.segment)
             app.stack.push_sound(sound)
             app.display.print_stack(app.stack)
     
-    def swap(self, app:'mw.stack.App'):
+    def swap(self, app:'mw.app.App'):
         "Swap the top two sounds on the stack"
         if len(app.stack.entries) > 1:
             app.stack.entries[-1], app.stack.entries[-2] = \
@@ -122,12 +122,12 @@ class CommandHandler:
         
         app.display.print_stack(app.stack)
 
-    def pop(self, app:'mw.stack.App'):
+    def pop(self, app:'mw.app.App'):
         "Pop the top sound on the stack, deleting it"
         app.stack.entries.pop()
         app.display.print_stack(app.stack)
     
-    def roll(self, app:'mw.stack.App', count :str = "1"):
+    def roll(self, app:'mw.app.App', count :str = "1"):
         "Roll the stack"
         if count.isdigit():
             num = int(count)
@@ -136,28 +136,28 @@ class CommandHandler:
         else:
             print(f"Parse error: \"{count}\" is not a number")
 
-    def crop(self, app: 'mw.stack.App',):
+    def crop(self, app: 'mw.app.App',):
         "Crop the sound to the in and out points"
         if app.stack.top:
             app.stack.top.crop_to_selection()
         
         app.display.print_head(app.stack)
 
-    def ci(self, app: 'mw.stack.App'):
+    def ci(self, app: 'mw.app.App'):
         "Clear in point"
         if app.stack.top:
             app.stack.top.in_point = None
 
         app.display.print_head(app.stack)
 
-    def co(self, app:'mw.stack.App'):
+    def co(self, app:'mw.app.App'):
         "Clear out point"
         if app.stack.top:
             app.stack.top.out_point = None
 
         app.display.print_head(app.stack)
 
-    def silence(self, app:'mw.stack.App', dur: str):
+    def silence(self, app:'mw.app.App', dur: str):
         "Insert silence at cursor"
         if dur.isdigit():
             if app.stack.top:
@@ -168,21 +168,21 @@ class CommandHandler:
         else:
             print(f"Parse error: \"{dur}\" is not a number")
 
-    def split(self, app:'mw.stack.App'):
+    def split(self, app:'mw.app.App'):
         "Split sound"
         if app.stack.top:
             app.stack.split()
         app.display.print_stack(app.stack)
 
-    def fadein(self, app:'mw.stack.App'):
+    def fadein(self, app:'mw.app.App'):
         "Fade in from cilp start to cursor"
         pass
 
-    def fadeout(self, app:'mw.stack.App'):
+    def fadeout(self, app:'mw.app.App'):
         "Fade out from clip start to cursor"
         pass
 
-    # def play(self, app:'mw.stack.App'):
+    # def play(self, app:'mw.app.App'):
     #     "Play the sound"
     #     app.play()
 
