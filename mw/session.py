@@ -61,7 +61,6 @@ class Session:
         self.in_point = None
         self.out_point = None
         self.cursor = 0
-        self.display.print_head(self)
 
     def length(self) -> Milliseconds:
         return max(map(lambda x: len(x.clip()), self.stack))
