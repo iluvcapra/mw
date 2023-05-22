@@ -65,6 +65,12 @@ class StackFrame:
     def play(self):
         play(self.segment)
 
+    def pad(self, to_length: Milliseconds):
+        to_add = len(self.segment) - to_length
+        if to_add > 0:
+            self.segment = self.segment + AudioSegment.silent(to_add)
+
+
 
 class Stack:
     entries: List[StackFrame]
@@ -100,6 +106,24 @@ class Stack:
         self.cursor = 0
         self.in_point = None
         self.out_point = None
+    
+    def bounce(self):
+        assert len(self.entries) > 1
+        
+        a = self.entries[-1].segment
+        b = self.entries[-2].segment
+
+        if len(a) < len(b):
+            a, b = b, a
+
+        self.entries.pop()
+        self.entries.pop()
+
+        mixed = a.overlay(b)
+        self.entries.append(StackFrame(mixed))
+
+
+
 
     def length(self) -> Milliseconds:
         if len(self.entries) > 0:

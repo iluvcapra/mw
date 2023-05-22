@@ -210,6 +210,11 @@ class CommandHandler:
         if app.stack.top:
             print(f"{len(app.stack.top.segment)} ms")
 
+    def bounce(self, app: 'mw.app.App'):
+        "Bounce (mix) the top sound in the stack with the sound below it"
+        if len(app.stack.entries) > 1:
+            app.stack.bounce()
+
 
 
 
