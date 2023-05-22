@@ -20,4 +20,8 @@ export__. Each sound on the stack has an independent cursor, in- and out-point
 
 For a complete list of commands, enter __help__ at the prompt.
 
+# Screenshot
+
+[Link to Screenshot](https://github.com/iluvcapra/mw/docs/mw.png)
+
 ![Screenshot of an editing session](docs/mw.png)
