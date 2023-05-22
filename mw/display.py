@@ -54,12 +54,23 @@ class Display:
 
     def print_head(self, stack: 'mw.stack.Stack'):
         if stack.top:
-            self.print_frame_single(stack.top)
             self.print_ruler(stack.top)
+            self.print_frame_single(stack.top)
+            self.print_selection(stack.top)
         else:
             print("Stack empty")
-
+    
     def print_ruler(self, entry: 'mw.stack.StackFrame'):
+        start_time = f"{entry.view_start}"
+        end_time = f"{entry.view_end} ms"
+        slug = list(" " * self.print_width_for_length(entry.view_length(),
+                                                      entry.view_length()))
+
+        slug[0:len(start_time)] = start_time
+        slug[-len(end_time):] = end_time
+        print("".join(slug))
+
+    def print_selection(self, entry: 'mw.stack.StackFrame'):
         slug = list(" " * self.display_width)
         in_pos = None
         out_pos = None
