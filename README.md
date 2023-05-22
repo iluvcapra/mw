@@ -22,6 +22,5 @@ For a complete list of commands, enter __help__ at the prompt.
 
 # Screenshot
 
-![Screenshot of an editing session](docs/mw.png)
+![Screenshot of an editing session](https://github.com/iluvcapra/mw/raw/master/docs/mw.png)
 
-[Link to Screenshot](https://github.com/iluvcapra/mw/docs/mw.png)
