@@ -36,6 +36,8 @@ class StackFrame:
         self.in_point = None
         self.out_point = None
         self.cursor = Milliseconds(0)
+        self.view_start = Milliseconds(0)
+        self.view_end = Milliseconds(len(self.segment))
 
     def crop_to_selection(self):
         self.crop(self.in_point or Milliseconds(0), 
@@ -47,6 +49,8 @@ class StackFrame:
         b = self.segment[at:]
         silence = AudioSegment.silent(duration=duration)
         self.segment = a + silence + b
+        self.view_start = Milliseconds(0)
+        self.view_end = Milliseconds(len(self.segment))
 
     def bloop(self, duration: Optional[Milliseconds] = None, at: Optional[Milliseconds] = None):
         if duration is None:
@@ -66,6 +70,9 @@ class StackFrame:
         b = self.segment[at + duration:]
         silence = AudioSegment.silent(duration)
         self.segment = a + silence + b
+
+        self.view_start = Milliseconds(0)
+        self.view_end = Milliseconds(len(self.segment))
     
     def fade_in(self, to: Milliseconds):
         assert (0 <= to < len(self.segment))
@@ -88,6 +95,9 @@ class StackFrame:
         to_add = len(self.segment) - to_length
         if to_add > 0:
             self.segment = self.segment + AudioSegment.silent(to_add)
+
+        self.view_start = Milliseconds(0)
+        self.view_end = Milliseconds(len(self.segment))
 
     def export(self, filename):
         self.segment.export(filename,format='wav')
