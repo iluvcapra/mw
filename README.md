@@ -1,4 +1,4 @@
-[![Documentation Status](https://readthedocs.org/projects/mw/badge/?version=latest)](https://wavinfo.readthedocs.io/en/latest/?badge=latest) ![](https://img.shields.io/github/license/iluvcapra/mw.svg) ![](https://img.shields.io/pypi/pyversions/mw.svg) [![](https://img.shields.io/pypi/v/mw.svg)](https://pypi.org/project/mw/) ![](https://img.shields.io/pypi/wheel/mw.svg)
+[![Documentation Status](https://readthedocs.org/projects/mw/badge/?version=latest)](https://mw.readthedocs.io/en/latest/?badge=latest) ![](https://img.shields.io/github/license/iluvcapra/mw.svg) ![](https://img.shields.io/pypi/pyversions/mw.svg) [![](https://img.shields.io/pypi/v/mw.svg)](https://pypi.org/project/mw/) ![](https://img.shields.io/pypi/wheel/mw.svg)
 [![Lint and Test](https://github.com/iluvcapra/mw/actions/workflows/python-package.yml/badge.svg)](https://github.com/iluvcapra/mw/actions/workflows/python-package.yml)
 
 # mw
