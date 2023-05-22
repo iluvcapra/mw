@@ -89,6 +89,8 @@ class StackFrame:
         if to_add > 0:
             self.segment = self.segment + AudioSegment.silent(to_add)
 
+    def export(self, filename):
+        self.segment.export(filename,format='wav')
 
 
 class Stack:

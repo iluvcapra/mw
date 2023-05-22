@@ -224,6 +224,9 @@ class CommandHandler:
 
         app.display.print_head(app.stack)
 
+    def export(self, app: 'mw.app.App', name: str = "out.wav"):
+        if app.stack.top:
+            app.stack.top.export(name)
 
 
 
