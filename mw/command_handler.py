@@ -33,7 +33,10 @@ class CommandHandler:
     """
     def _handle(self, app, words): 
         if len(words) > 0 and hasattr(self, words[0]):
-            getattr(self, words[0])(app, *words[1:])
+            try:
+                getattr(self, words[0])(app, *words[1:])
+            except TypeError:
+                print("Error: incorrect parameter count to command")
         else:
             self.help(app)
 
