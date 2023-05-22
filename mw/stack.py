@@ -25,6 +25,9 @@ class StackFrame:
     def view_length(self) -> Milliseconds:
         assert self.view_end > self.view_start
         return Milliseconds( self.view_end - self.view_start )
+    
+    def zoom(self, factor: float):
+        pass
 
     def crop(self, start: Milliseconds, end: Milliseconds):
         assert end > start, "crop end must be > crop start"
@@ -73,10 +76,11 @@ class Stack:
 
 
     def split(self):
-        if len(self.entries) > 0:
-            to_split = self.entries[-1].segment
-            a :AudioSegment = cast(AudioSegment, to_split[0:self.cursor])
-            b :AudioSegment = cast(AudioSegment, to_split[self.cursor:])
+        if self.top:
+            to_split = self.top.segment
+            at = self.top.cursor
+            a :AudioSegment = cast(AudioSegment, to_split[0:at])
+            b :AudioSegment = cast(AudioSegment, to_split[at:])
             self.entries.pop()
             self.entries.append(StackFrame(a))
             self.entries.append(StackFrame(b))
@@ -84,9 +88,6 @@ class Stack:
         self.cursor = 0
         self.in_point = None
         self.out_point = None
-        # self.display.view_start = 0
-        # self.display.view_end = self.length()
-
 
     def length(self) -> Milliseconds:
         if len(self.entries) > 0:
