@@ -1,6 +1,7 @@
 import inspect
 from copy import deepcopy
 from typing import List, Callable, Optional
+import sys, os
 
 import mw
 from mw.types import Milliseconds
@@ -199,7 +200,15 @@ class CommandHandler:
         "Play the sound"
         if app.stack.top:
             app.stack.top.play()
+    
+    def license(self, app: 'mw.app.App'):
+        "Print the license"
+        print(app.license())
 
+    def length(self, app:'mw.app.App'):
+        "Print the length of the top sound"
+        if app.stack.top:
+            print(f"{len(app.stack.top.segment)} ms")
 
 
 

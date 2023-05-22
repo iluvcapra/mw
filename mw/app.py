@@ -2,6 +2,7 @@ from mw.stack import Stack
 from mw.display import Display
 from mw.command_handler import CommandHandler
 
+from os.path import join, split
 from typing import Optional
 
 try:
@@ -23,6 +24,12 @@ class App:
         readline.set_completer(completer)
         readline.parse_and_bind("tab: complete")
 
+    def license(self) -> str:
+        module_dir = list(split(__file__)[:-2])
+        license_path_list = module_dir + ["LICENSE"]
+        license_path = join(*license_path_list)
+        with open(license_path) as f:
+            return f.read()
 
     def get_input(self):
         selection = []
