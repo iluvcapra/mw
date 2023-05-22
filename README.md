@@ -1,6 +1,8 @@
 # mw
 
-`mw` is an audio sample editor for the terminal.
+`mw` is an audio sample editor for the terminal. If you're ever in a terminal/tmux
+session and just wanted to get a look at and maybe edit a sound file without
+having to open a window, this is a tool for you!
 
 # How to Use
 
