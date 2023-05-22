@@ -74,17 +74,12 @@ class CommandHandler:
             app.stack.top.cursor = Milliseconds(max(app.stack.top.cursor, 0))
             app.display.print_head(app.stack)
 
-    def cbegin(self, app: 'mw.app.App'):
-        "Set cursor to beginning of sound"
+    def cend(self, app: 'mw.app.App', pos: str = "0"):
+        "Set cursor relative to the end of sound"
         if app.stack.top:
-            app.stack.top.cursor = Milliseconds(0)
-            
-        app.display.print_head(app.stack)
-
-    def cend(self, app: 'mw.app.App'):
-        "Set cursor to end of sound"
-        if app.stack.top:
-            app.stack.top.cursor = Milliseconds(len(app.stack.top.segment))
+            val = parse_numeric(0, pos)
+            new_time = len(app.stack.top.segment) - abs(val)
+            app.stack.top.cursor = Milliseconds(new_time)
         
         app.display.print_head(app.stack)
 
@@ -190,11 +185,14 @@ class CommandHandler:
         if app.stack.top:
             app.stack.top.fade_in(app.stack.top.cursor)
 
+        app.display.print_head(app.stack)
 
     def fadeout(self, app:'mw.app.App'):
         "Fade out from clip start to cursor"
         if app.stack.top:
             app.stack.top.fade_out(app.stack.top.cursor)
+        
+        app.display.print_head(app.stack)
 
     def play(self, app:'mw.app.App'):
         "Play the sound"
@@ -214,6 +212,18 @@ class CommandHandler:
         "Bounce (mix) the top sound in the stack with the sound below it"
         if len(app.stack.entries) > 1:
             app.stack.bounce()
+
+        app.display.print_stack(app.stack)
+
+    def bloop(self, app: 'mw.app.App'):
+        "Replace audio in selection with silence"
+        if app.stack.top and (app.stack.top.in_point is not None 
+            or app.stack.top.out_point is not None):
+
+            app.stack.top.bloop()
+
+        app.display.print_head(app.stack)
+
 
 
 

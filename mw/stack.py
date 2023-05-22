@@ -46,7 +46,26 @@ class StackFrame:
         a = self.segment[0:at]
         b = self.segment[at:]
         silence = AudioSegment.silent(duration=duration)
-        self.segment = a + silence + b 
+        self.segment = a + silence + b
+
+    def bloop(self, duration: Optional[Milliseconds] = None, at: Optional[Milliseconds] = None):
+        if duration is None:
+            duration = Milliseconds(
+                (self.out_point or len(self.segment)) - 
+                (self.in_point or Milliseconds(0))
+                                    )
+
+        if at is None:
+            at = self.in_point or Milliseconds(0)
+
+        if at is None or duration is None:
+            return
+
+        assert at + duration < len(self.segment)
+        a = self.segment[0:at]
+        b = self.segment[at + duration:]
+        silence = AudioSegment.silent(duration)
+        self.segment = a + silence + b
     
     def fade_in(self, to: Milliseconds):
         assert (0 <= to < len(self.segment))
@@ -119,8 +138,7 @@ class Stack:
         self.entries.pop()
         self.entries.pop()
 
-        mixed = a.overlay(b)
-        self.entries.append(StackFrame(mixed))
+        self.entries.append(StackFrame(a.overlay(b)))
 
 
 
