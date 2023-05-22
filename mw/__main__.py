@@ -9,13 +9,16 @@ import pydub
 
 from mw import __version__
 from mw.app import App
-from mw.types import Milliseconds
+
+
+def print_banner():
+    print(f"mw {__version__}")
+    print(f"(c) 2023 Jamie Hardt. All Rights Reserved.")
+
 
 def main():
-    print(f"mw v{__version__}")
-    print(f"(c) 2023 Jamie Hardt. All Rights Reserved.", flush=True)
+    print_banner()
     parser = optparse.OptionParser()
-
     (_, files) = parser.parse_args()
     
     app = App()
@@ -24,10 +27,6 @@ def main():
         print(f"Reading audio file {file}...")
         audio = pydub.AudioSegment.from_file(file)
         app.stack.push_sound(audio)
-    
-    # FIXME this is a bug
-    app.display.view_start = Milliseconds(0)
-    app.display.view_end = app.stack.length()
     
     app.run()
 
