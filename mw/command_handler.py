@@ -61,10 +61,6 @@ class CommandHandler:
                 pnames = "[" + ",".join(pnames) + "]"
                 print(f"{f} {pnames}".ljust(15) + f": {m.__doc__}")
     
-    # def clean(self, _):
-    #     for _ in range(int(os.getenv("ROWS") or "100")):
-    #         print("")
-                
     def stack(self, app: 'mw.app.App'):
         "Print the stack"
         app.display.print_stack(app.stack)
