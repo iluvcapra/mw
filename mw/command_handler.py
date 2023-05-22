@@ -1,24 +1,20 @@
 import inspect
 from copy import deepcopy
 from typing import List, Callable, Optional
-import os
 
 import mw
 from mw.types import Milliseconds
 
 def parse_numeric(base_value: int, val: str):
+    """
+    A helper function for converting numeric entries from the command prompt.
+    """
     if val[0] in ["+","-"] and val[1:].isdigit():
         base_value += int(val)
     elif val.isdigit():
         base_value = int(val)
     return base_value
 
-#
-# def completion(obj: 'CommandHandler', partial: str, state: int) -> str:
-#     all = [name for name in dir(obj) if not name.startswith("_")]
-#     begin = [name for name in all if name.startswith(partial)]
-#     return begin[state]
-#
 
 class CommandHandler:
     """
@@ -194,15 +190,19 @@ class CommandHandler:
 
     def fadein(self, app:'mw.app.App'):
         "Fade in from cilp start to cursor"
-        pass
+        if app.stack.top:
+            app.stack.top.fade_in(app.stack.top.cursor)
+
 
     def fadeout(self, app:'mw.app.App'):
         "Fade out from clip start to cursor"
-        pass
+        if app.stack.top:
+            app.stack.top.fade_out(app.stack.top.cursor)
 
-    # def play(self, app:'mw.app.App'):
-    #     "Play the sound"
-    #     app.play()
+    def play(self, app:'mw.app.App'):
+        "Play the sound"
+        if app.stack.top:
+            app.stack.top.play()
 
 
 

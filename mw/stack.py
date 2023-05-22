@@ -1,5 +1,6 @@
+# from numpy import who
 from pydub import AudioSegment
-# from pydub.playback import play
+from pydub.playback import play
 
 from mw.types import Milliseconds
 
@@ -47,11 +48,22 @@ class StackFrame:
         silence = AudioSegment.silent(duration=duration)
         self.segment = a + silence + b 
     
+    def fade_in(self, to: Milliseconds):
+        assert (0 <= to < len(self.segment))
+        self.segment = self.segment.fade_in(to)
+
+    def fade_out(self, at: Milliseconds):
+        assert (0 <= at < len(self.segment))
+        self.segment = self.segment.fade_out(len(self.segment) - at)
+
     def clip_for_view(self) -> AudioSegment:
         return cast(AudioSegment, self.segment[self.view_start:self.view_end])
 
     def clip(self) -> AudioSegment:
         return self.segment
+
+    def play(self):
+        play(self.segment)
 
 
 class Stack:
@@ -94,4 +106,4 @@ class Stack:
             return Milliseconds(max(map(lambda x: len(x.clip()), self.entries)))
         else:
             return Milliseconds(0)
- 
+
