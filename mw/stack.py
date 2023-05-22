@@ -76,14 +76,14 @@ class Stack:
 
 
     def split(self):
-        if self.top:
-            to_split = self.top.segment
-            at = self.top.cursor
-            a :AudioSegment = cast(AudioSegment, to_split[0:at])
-            b :AudioSegment = cast(AudioSegment, to_split[at:])
-            self.entries.pop()
-            self.entries.append(StackFrame(a))
-            self.entries.append(StackFrame(b))
+        assert self.top is not None, "No sound on stack"
+        to_split = self.top.segment
+        at = self.top.cursor
+        a = cast(AudioSegment, to_split[0:at])
+        b = cast(AudioSegment, to_split[at:])
+        self.entries.pop()
+        self.entries.append(StackFrame(a))
+        self.entries.append(StackFrame(b))
 
         self.cursor = 0
         self.in_point = None

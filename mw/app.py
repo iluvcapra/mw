@@ -40,7 +40,11 @@ class App:
             return input(f"- > ")
 
     def handle_command(self, command):
+        if len(command) == 0:
+            return True
+
         words = command.split()
+
         if words[0] == 'q':
             return False
         else:

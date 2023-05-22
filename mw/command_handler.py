@@ -1,6 +1,7 @@
 import inspect
 from copy import deepcopy
 from typing import List, Callable, Optional
+import os
 
 import mw
 from mw.types import Milliseconds
@@ -63,7 +64,11 @@ class CommandHandler:
                 pnames = list(argspec.parameters)[1:] 
                 pnames = "[" + ",".join(pnames) + "]"
                 print(f"{f} {pnames}".ljust(15) + f": {m.__doc__}")
-
+    
+    # def clean(self, _):
+    #     for _ in range(int(os.getenv("ROWS") or "100")):
+    #         print("")
+                
     def stack(self, app: 'mw.app.App'):
         "Print the stack"
         app.display.print_stack(app.stack)
@@ -139,12 +144,13 @@ class CommandHandler:
         app.stack.entries.pop()
         app.display.print_stack(app.stack)
     
-    def roll(self, app:'mw.app.App', count :str = "1"):
+    def roll(self, app:'mw.app.App', count: str = "1"):
         "Roll the stack"
-        if count.isdigit():
+        if count.isdigit() or count[0] == "-" and count[1:].isdigit():
             num = int(count)
             num = num % len(app.stack.entries)
-            app.stack.entries = app.stack.entries[num:] + app.stack.entries[0:num]
+            for _ in range(num):
+                app.stack.entries = app.stack.entries[-1:] + app.stack.entries[0:-1]
         else:
             print(f"Parse error: \"{count}\" is not a number")
 
