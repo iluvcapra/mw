@@ -15,10 +15,10 @@ $ mw my_voice.wav robot_sounds.wav
 
 File arguments are added to an internal stack and `mw` will present a command prompt. Most 
 editing operations (like fadein, silence) act on the top-most sound on the stack. Some
-commands `mw` supports include: __fadein, fadeout, silence, crop, bloop, split, bounce, 
-export__. Each sound on the stack has an independent cursor, in- and out-point
+commands `mw` supports include: _fadein, fadeout, silence, crop, bloop, split, bounce, 
+export_. Each sound on the stack has an independent cursor, in- and out-point
 
-For a complete list of commands, enter __help__ at the prompt.
+For a complete list of commands, enter _help_ at the prompt.
 
 # Screenshot
 
