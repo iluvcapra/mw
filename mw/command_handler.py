@@ -65,6 +65,11 @@ class CommandHandler:
                 pnames = "[" + ",".join(pnames) + "]"
                 print(f"{f} {pnames}".ljust(15) + f": {m.__doc__}")
     
+    def license(self, app: 'mw.app.App'):
+        "Print the license"
+        print(app.license())
+
+  
     def stack(self, app: 'mw.app.App'):
         "Print the stack"
         app.display.print_stack(app.stack)
@@ -110,6 +115,19 @@ class CommandHandler:
             app.stack.top.out_point = Milliseconds(new_time)
             app.display.print_head(app.stack)
 
+    def ci(self, app: 'mw.app.App'):
+        "Clear in point"
+        if app.stack.top:
+            app.stack.top.in_point = None
+
+        app.display.print_head(app.stack)
+
+    def co(self, app:'mw.app.App'):
+        "Clear out point"
+        if app.stack.top:
+            app.stack.top.out_point = None
+
+        app.display.print_head(app.stack)
     def setw(self, app: 'mw.app.App', width = "80"):
         "Set columns width"
         app.display.display_width = int(width)
@@ -152,20 +170,6 @@ class CommandHandler:
         
         app.display.print_head(app.stack)
 
-    def ci(self, app: 'mw.app.App'):
-        "Clear in point"
-        if app.stack.top:
-            app.stack.top.in_point = None
-
-        app.display.print_head(app.stack)
-
-    def co(self, app:'mw.app.App'):
-        "Clear out point"
-        if app.stack.top:
-            app.stack.top.out_point = None
-
-        app.display.print_head(app.stack)
-
     def silence(self, app:'mw.app.App', dur: str):
         "Insert silence at cursor"
         if dur.isdigit():
@@ -202,10 +206,6 @@ class CommandHandler:
         if app.stack.top:
             app.stack.top.play()
     
-    def license(self, app: 'mw.app.App'):
-        "Print the license"
-        print(app.license())
-
     def length(self, app:'mw.app.App'):
         "Print the length of the top sound"
         if app.stack.top:

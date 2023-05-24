@@ -1,0 +1,126 @@
+.TH mw 1 "2023-05-23" iluvcapra "User Manuals"
+.SH NAME 
+mw \- An audio sample editor
+.SH SYNOPSIS
+.B mw 
+.I [FILE ...]
+.SH DESCRIPTION
+.B mw
+is an interactive, text-mode audio sample editor. Audio files provided as arguments
+on the command line are added to an internal stack where they can be inspected, 
+edited, mixed and exported.
+.SH OPTIONS
+.B mw
+supports no command-line options at this time.
+.SH COMMANDS
+The command prompt in 
+.B mw
+accepts lines of commands which begin with a command
+.I keyword
+followed by zero or more arguments.
+.P
+.BR mw 's
+command prompt supports GNU 
+.BR readline (3)
+for line editing and auto-completion; all of the commands listed here will autocomplete
+with the <Tab> key.
+.IP help
+Prints a list of all command keywords 
+.B mw
+recognizes, along with a brief description. Keywords that accept arguments
+are followed by their arguments in 
+.IR [brackets] .
+.IP license
+Prints
+.BR mw 's
+license.
+.IP show
+Prints a text graphic of the sound presently at the top of the editor stack. This
+include a waveform bargraph of the sound's amplitiude with respect to time, as well
+as a text representation of the current cursor, in- and out-points.
+.IP stack
+Prints a text graphic of every sound in the editor stack, from top to bottom, 
+and prints out the length of the current editing session, being the length of
+the longest sound in the stack.
+.IP "cmills [pos]"
+Sets or updates the cursor position to 
+.I pos
+milliseconds from the beginning of the sound, or, if 
+.I pos
+is preceded by a plus or minus symbol, will position the cursor relative to it's
+current position. Without an argument, positions the cursor at the beginning of the
+sound.
+.IP "cend [pos]"
+Positions the cursor relative to the end of the sound. Without an argument, 
+positions the cursor at the end of the sound.
+.IP "i [pos]"
+Sets the selection in-point for the sound, either at the current cursor position or
+at the time given by 
+.IR pos .
+.IP "o [pos]"
+Sets the selection out-point for the sound, either at the current cursor position or
+at the time given by 
+.IR pos .
+.IP "ci"
+Clears the selection in-point.
+.IP "co"
+Clears the selection out-point.
+.IP "setw [width]"
+Sets the current display width: the number of columns
+.B mw
+will use when
+.IR show ing
+a wavform. If no argument is given, defaults to 80.
+.IP dup
+Duplicates the sound at the top of the stack and pushes the duplicate onto the top.
+.IP swap
+Swaps the top two sounds on the stack.
+.IP pop
+Pops the sound at the top of the stack, deleting it.
+.IP "roll [count]"
+Rolls the stack forward, the top sound is placed at the end and the second sound becomes
+the top sound. The
+.I count
+may be either positive or negative and defaults to "1".
+.IP crop
+Crops the sound. Samples prior to the selection in-point and after the selection out-point
+are deleted. If either of these is not specified, the beginning and end of the sound
+are the default.
+.IP "silence [dur]
+Inserts silence of length
+.I dur
+milliseconds at the cursor.
+.IP split
+Splits the sound at the cursor position. The current sound is popped off the stack. 
+Two new sounds are pushed onto the stack, the first made of the samples preceding the
+cursor and the second of samples following the cursor.
+.IP fadein
+Applies a linear fade to the sound, increasing from the beginning of the sound to the 
+cursor.
+.IP fadeout
+Applies a linear fade to the sound, decreasing from the cursor to the end of the sound.
+.IP play
+Plays the sound.
+.IP length
+Prints the length of the sound.
+.IP bounce
+Bounces or mixes the top two sounds on the stack together, creating a new sound that is
+placed on the top of the stack.
+.IP bloop
+Silences the samples between the insertion in-point and out-point.
+.IP export [name]
+Exports the sound as a wav file. If no
+.I name
+is provided, the default is 
+.IR out.wav .
+.SH AUTHOR
+Jamie Hardt <https://github.com/iluvcapra>
+.SH BUGS
+.B mw
+is (optimistically) beta software and has numerous gaps in implementation and 
+performance. Issue submissions, feature requests, pull requests and other contributions 
+are welcome and should be directed at 
+.BR mw 's
+home page on GitHub:
+.RS 4
+.I https://github.com/iluvcapra/mw 

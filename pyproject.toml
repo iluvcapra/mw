@@ -32,6 +32,9 @@ keywords = [
     'console'
 ]
 
+[tool.flit.external-data]
+directory = "data"
+
 [tool.flit.module]
 name = "mw"
 
