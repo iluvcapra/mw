@@ -3,7 +3,7 @@ from mw.display import Display
 from mw.command_handler import CommandHandler
 
 from os.path import join, split
-from typing import Optional
+# from typing import Optional
 
 try:
     import gnureadline as readline
@@ -55,7 +55,7 @@ class App:
         if words[0] == 'q':
             return False
         else:
-            self.command_handler._handle(self, words)
+            self.command_handler._handle_one(self, words)
 
         return True
 
