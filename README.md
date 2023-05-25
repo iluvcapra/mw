@@ -3,9 +3,11 @@
 
 # mw
 
-`mw` is an audio sample editor for the terminal. If you're ever in a terminal/tmux
-session and just wanted to get a look at and maybe edit a sound file without
-having to open a window, this is a tool for you!
+`mw` is an interactive, text-mode audio sample editor. Audio files provided as arguments
+on the command line can be inspected, edited, mixed and exported.
+
+If you're ever in a terminal/tmux session and just wanted to get a look at and maybe edit 
+a sound file without having to open a window, this is a tool for you!
 
 # How to Use
 
@@ -16,12 +18,11 @@ to read audio and supports any file format ffmpeg does.
 $ mw my_voice.wav robot_sounds.wav
 ```
 
-File arguments are added to an internal stack and `mw` will present a command prompt. Most 
-editing operations (like fadein, silence) act on the top-most sound on the stack. Some
-commands `mw` supports include: _fadein, fadeout, silence, crop, bloop, split, bounce, 
-export_. Each sound on the stack has an independent cursor, in- and out-point
+File arguments are added to an internal stack and `mw` will present a command prompt. Some
+commands `mw` supports include: _fadein, fadeout, silence, crop, bloop, split, bounce,_ and
+_export_.
 
-For a complete list of commands, enter _help_ at the prompt.
+For a complete list of commands, enter _help_ at the prompt or read `mw`'s manpage.
 
 # Screenshot
 
