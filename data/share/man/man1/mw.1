@@ -2,8 +2,10 @@
 .SH NAME 
 mw \- audio sample editor
 .SH SYNOPSIS
-.B mw 
-.I [FILE ...]
+.SY mw
+.RI "[\-c " COMMAND " ]"
+.RI "[" "FILE ..." "]"
+.YS
 .SH DESCRIPTION
 .B mw
 is an interactive, text-mode audio sample editor. Audio files provided as arguments
@@ -47,8 +49,12 @@ frame
 which also maintains editing context pertinent to the sound, such as the location of the
 cursor and selection in- and out-points.
 .SH OPTIONS
-.B mw
-supports no command-line options at this time.
+.IP "\-c COMMAND"
+Execute 
+.I COMMAND
+after loading 
+.IR FILE "s."
+Can be used multiple times to run multiple commands.
 .SH COMMANDS
 The command prompt in 
 .B mw
