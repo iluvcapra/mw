@@ -46,7 +46,7 @@ class App:
         else:
             return input(f"- > ")
 
-    def handle_command(self, command):
+    def handle_command_line(self, command):
         if len(command) == 0:
             return True
 
@@ -60,10 +60,10 @@ class App:
         return True
 
     def run(self):
-        self.display.print_stack(self.stack)
+        print("Type \"q\" to quit.")
         while True:
             command = self.get_input()
-            if not self.handle_command(command):
+            if not self.handle_command_line(command):
                 break
 
  

@@ -51,10 +51,10 @@ Source = "https://github.com/iluvcapra/mw.git"
 Issues = 'https://github.com/iluvcapra/mw/issues' 
 
 [project.entry_points.console_scripts]
-apeek = 'mw.__main__:main'
+mw = 'mw.__main__:main'
 
 [project.scripts]
-apeek = "mw.__main__:main"
+mw = "mw.__main__:main"
 
 [tool.pyright]
 typeCheckingMode = "basic"

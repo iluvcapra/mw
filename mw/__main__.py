@@ -17,17 +17,23 @@ def print_banner():
 
 
 def main():
-    print_banner()
     parser = optparse.OptionParser()
-    (_, files) = parser.parse_args()
+    parser.add_option("-e", "--exec", help="Execute command", 
+                      action="append", metavar="COMMAND")
+    (options, files) = parser.parse_args()
     
     app = App()
+    
+    print_banner()
 
     for file in files:
         print(f"Reading audio file {file}...")
         audio = pydub.AudioSegment.from_file(file)
         app.stack.push_sound(audio)
     
+    for command in options.exec or []:
+        app.handle_command_line(command)
+
     app.run()
 
 
