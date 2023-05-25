@@ -1,14 +1,51 @@
 .TH mw 1 "2023-05-23" "Jamie Hardt" "User Manuals"
 .SH NAME 
-mw \- An audio sample editor
+mw \- audio sample editor
 .SH SYNOPSIS
 .B mw 
 .I [FILE ...]
 .SH DESCRIPTION
 .B mw
 is an interactive, text-mode audio sample editor. Audio files provided as arguments
-on the command line are added to an internal stack where they can be inspected, 
-edited, mixed and exported.
+on the command line can be inspected, edited, mixed and exported.
+.SS MOTIVATION
+.B mw
+is an audio sample editor, designed to edit individual, contiguous sounds in a manner 
+similar to 
+.BR "BIAS Peak" ", " "Audacity" " or " "iZotope RX" "."
+.B mw
+runs fully in text mode on a terminal, and allows viewing and manipulating audio data 
+without recourse to a GUI; this can be useful to users who can't access a GUI in their
+environment for whatever reason, or as part of a broader text-mode workflow.
+.PP
+.B mw
+can be thought of as a kind of 
+.BR ed "(1),"
+except for editing audio sample vectors instead of text files and with functions 
+tailored to the specifc case of editing sample vectors.
+.SS THEORY OF OPERATION
+.B mw
+accepts filenames as arguments from the command line and pushes these sounds onto an 
+internal 
+.BR stack "." 
+Editing functions (such as 
+.IR crop " or " "fadein" ")"
+target the sound at the top of the stack, while commands that combine sounds or create 
+new sounds as a side-effect (like
+.IR bounce " or " split ")"
+will either consume sounds from the stack or push new sounds onto the stack.
+.PP 
+The stack
+can be used as a scratch pad to save intermediate versions of a sound being edited, as 
+a storage space for a collection of sounds, or any other purpose, and can be manipulated 
+with dedicated commands such as 
+.IR dup ", " pop ", " swap ", " roll ", etc."
+.PP
+Each individual sound on the stack is contained in a 
+.B
+frame
+which also maintains editing context pertinent to the sound, such as the location of the
+cursor and selection in- and out-points.
 .SH OPTIONS
 .B mw
 supports no command-line options at this time.
@@ -113,6 +150,9 @@ Exports the sound as a wav file. If no
 .I name
 is provided, the default is 
 .IR out.wav .
+.SH EXIT STATUS
+.IP 0
+On user quit.
 .SH AUTHOR
 Jamie Hardt <https://github.com/iluvcapra>
 .SH BUGS
@@ -124,3 +164,6 @@ are welcome and should be directed at
 home page on GitHub:
 .RS 4
 .I https://github.com/iluvcapra/mw 
+.SH SEE ALSO
+.BR "ffmpeg" "(1),"
+.BR "pydub" "<http://pydub.com>"
