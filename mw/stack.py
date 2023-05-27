@@ -141,7 +141,15 @@ class Stack:
         a = self.entries.pop().segment
         b = self.entries.pop().segment
         self.entries.append(StackFrame(a + b))
+
         
+    def prepend(self):
+        assert len(self.entries) > 1
+
+        a = self.entries.pop().segment
+        b = self.entries.pop().segment
+        self.entries.append(StackFrame(b + a))
+
 
     def bounce(self):
         assert len(self.entries) > 1

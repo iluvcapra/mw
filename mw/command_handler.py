@@ -188,11 +188,16 @@ class CommandHandler:
             app.stack.split()
         app.display.print_stack(app.stack)
 
-
     def append(self, app:'mw.app.App'):
         "Append sound"
         if len(app.stack.entries) > 1:
             app.stack.append()
+        app.display.print_stack(app.stack)
+
+    def prepend(self, app:'mw.app.App'):
+        "Prepend sound"
+        if len(app.stack.entries) > 1:
+            app.stack.prepend()
         app.display.print_stack(app.stack)
 
     def fadein(self, app:'mw.app.App'):
