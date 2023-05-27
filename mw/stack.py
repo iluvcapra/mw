@@ -134,10 +134,15 @@ class Stack:
         self.entries.append(StackFrame(a))
         self.entries.append(StackFrame(b))
 
-        self.cursor = 0
-        self.in_point = None
-        self.out_point = None
-    
+   
+    def append(self):
+        assert len(self.entries) > 1
+
+        a = self.entries.pop().segment
+        b = self.entries.pop().segment
+        self.entries.append(StackFrame(a + b))
+        
+
     def bounce(self):
         assert len(self.entries) > 1
         
@@ -153,11 +158,7 @@ class Stack:
         self.entries.append(StackFrame(a.overlay(b)))
 
 
-
-
     def length(self) -> Milliseconds:
-        if len(self.entries) > 0:
-            return Milliseconds(max(map(lambda x: len(x.clip()), self.entries)))
-        else:
-            return Milliseconds(0)
+        return Milliseconds(max(list(map(lambda x: len(x.clip()), self.entries)) + [0]))
+
 

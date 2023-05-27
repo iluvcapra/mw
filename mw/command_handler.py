@@ -4,6 +4,7 @@ from typing import List, Callable, Optional
 import sys, os
 
 import mw
+from mw.stack import StackFrame
 from mw.types import Milliseconds
 
 def parse_numeric(base_value: int, val: str):
@@ -185,6 +186,13 @@ class CommandHandler:
         "Split sound"
         if app.stack.top:
             app.stack.split()
+        app.display.print_stack(app.stack)
+
+
+    def append(self, app:'mw.app.App'):
+        "Append sound"
+        if len(app.stack.entries) > 1:
+            app.stack.append()
         app.display.print_stack(app.stack)
 
     def fadein(self, app:'mw.app.App'):

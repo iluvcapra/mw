@@ -3,7 +3,7 @@
 mw \- audio sample editor
 .SH SYNOPSIS
 .SY mw
-.RI "[\-e " COMMAND " ]"
+.RI "[\-e " COMMAND "]"
 .RI "[" "FILE ..." "]"
 .SH DESCRIPTION
 .B mw
@@ -138,6 +138,8 @@ milliseconds at the cursor.
 Splits the sound at the cursor position. The current sound is popped off the stack. 
 Two new sounds are pushed onto the stack, the first made of the samples preceding the
 cursor and the second of samples following the cursor.
+.IP append
+Appends the 2nd-highest sound on the stack to the end of the top sound on the stack. 
 .IP fadein
 Applies a linear fade to the sound, increasing from the beginning of the sound to the 
 cursor.
