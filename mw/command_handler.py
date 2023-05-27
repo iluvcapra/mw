@@ -200,6 +200,12 @@ class CommandHandler:
             app.stack.prepend()
         app.display.print_stack(app.stack)
 
+    def loop(self, app:'mw.app.App', count = "2"):
+        "Loop sound"
+        if app.stack.top:
+            app.stack.loop(count=int(count))
+        app.display.print_head(app.stack)
+
     def fadein(self, app:'mw.app.App'):
         "Fade in from cilp start to cursor"
         if app.stack.top:

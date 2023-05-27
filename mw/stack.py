@@ -150,6 +150,11 @@ class Stack:
         b = self.entries.pop().segment
         self.entries.append(StackFrame(b + a))
 
+    def loop(self, count: int = 2):
+        assert len(self.entries) > 0
+        a = self.entries.pop()
+        segment = cast(AudioSegment, a.segment[a.in_point or 0:a.out_point or len(a.segment)])
+        self.entries.append(StackFrame(segment * count))
 
     def bounce(self):
         assert len(self.entries) > 1
