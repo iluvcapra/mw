@@ -1,6 +1,6 @@
 from mw.stack import Stack
 from mw.display import Display
-from mw.command_handler import CommandHandler
+from mw.commands import CommandHandler
 
 from os.path import join, split
 # from typing import Optional
