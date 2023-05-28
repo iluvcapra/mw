@@ -32,7 +32,7 @@ class CommandHandler:
     The help() method iterates through all the "normal" named attributes on the class 
     and prints the docstring for each as the help text.
     """
-    def _handle_one(self, app, words): 
+    def _handle_command(self, app, words): 
         if len(words) > 0 and hasattr(self, words[0]):
             try:
                 getattr(self, words[0])(app, *words[1:])
@@ -53,6 +53,10 @@ class CommandHandler:
                 return None
 
         return _impl_autocomplete
+
+    def q(self, app: 'mw.app.App'):
+        "Exit the program"
+        app.should_exit = True
 
     def help(self, _ : 'mw.app.App'):
         "Print help"

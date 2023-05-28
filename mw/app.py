@@ -15,12 +15,14 @@ class App:
     display: Display
     stack: Stack
     command_handler: CommandHandler
+    should_exit: bool
 
     def __init__(self):
         self.stack = Stack([])
         self.display = Display()
         self.command_handler = CommandHandler()
-        completer =  self.command_handler._partial_completion_handler()
+        self.should_exit = False
+        completer = self.command_handler._partial_completion_handler()
         readline.set_completer(completer)
         readline.parse_and_bind("tab: complete")
 
@@ -35,10 +37,10 @@ class App:
         selection = []
 
         if self.stack.top:
-            if self.stack.top.in_point:
+            if self.stack.top.in_point is not None:
                 selection.append(f"[{self.stack.top.in_point}")
 
-            if self.stack.top.out_point:
+            if self.stack.top.out_point is not None:
                 selection.append(f"{self.stack.top.out_point}]")
             
             selection = "→".join(selection)
@@ -48,22 +50,16 @@ class App:
 
     def handle_command_line(self, command):
         if len(command) == 0:
-            return True
+            return
 
         words = command.split()
 
-        if words[0] == 'q':
-            return False
-        else:
-            self.command_handler._handle_one(self, words)
-
-        return True
+        self.command_handler._handle_command(self, words)
 
     def run(self):
-        print("Type \"q\" to quit.")
-        while True:
+        # print("Type \"q\" to quit.")
+        while not self.should_exit:
             command = self.get_input()
-            if not self.handle_command_line(command):
-                break
+            self.handle_command_line(command)
 
  
