@@ -86,7 +86,7 @@ as a text representation of the current cursor, in- and out-points.
 Prints a text graphic of every sound in the editor stack, from top to bottom, 
 and prints out the length of the current editing session, being the length of
 the longest sound in the stack.
-.IP "cmills [abs|+rel|-rel]"
+.IP "cmills [pos]"
 Sets or updates the cursor position to 
 .I pos
 milliseconds from the beginning of the sound, or, if 
@@ -97,14 +97,14 @@ sound.
 .IP "cend [pos]"
 Positions the cursor relative to the end of the sound. Without an argument, 
 positions the cursor at the end of the sound.
-.IP "i [abs|+rel|-rel]"
+.IP "i [pos]"
 Sets the selection in-point for the sound, either at the current cursor position or
 at the time given by 
-.IR abs ", or a relative position."
-.IP "o [abs|+rel|-rel]"
+.IR pos .
+.IP "o [pos]"
 Sets the selection out-point for the sound, either at the current cursor position or
 at the time given by 
-.IR abs ", or a relative position."
+.IR pos .
 .IP "ci"
 Clears the selection in-point.
 .IP "co"
