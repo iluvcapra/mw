@@ -177,46 +177,9 @@ class CommandHandler:
         "Print the stack"
         app.display.print_stack(app.stack)
 
-    # def cmills(self, app: 'mw.app.App', pos: str = "0"):
-    #     "Set/nudge cursor position in millis"
-    #     if app.stack.top:
-    #         app.stack.top.cursor = Milliseconds(parse_numeric(app.stack.top.cursor, pos))
-    #         app.stack.top.cursor = Milliseconds(min(app.stack.top.cursor, len(app.stack.top.segment)))
-    #         app.stack.top.cursor = Milliseconds(max(app.stack.top.cursor, 0))
-    #         app.display.print_head(app.stack)
-
-    # def cend(self, app: 'mw.app.App', pos: str = "0"):
-    #     "Set cursor relative to the end of sound"
-    #     if app.stack.top:
-    #         val = parse_numeric(0, pos)
-    #         new_time = len(app.stack.top.segment) - abs(val)
-    #         app.stack.top.cursor = Milliseconds(new_time)
-    #     
-    #     app.display.print_head(app.stack)
-
     def show(self, app: 'mw.app.App'):
         "Show the current sound"
         app.display.print_head(app.stack)
-
-    # def i(self, app: 'mw.app.App', time = None):
-    #     "Set in point"
-    #     if app.stack.top:
-    #         new_time = app.stack.top.cursor
-    #         if time:
-    #             new_time = parse_numeric(app.stack.top.in_point or 0, time)
-    #         
-    #         app.stack.top.in_point = Milliseconds(new_time)
-    #         app.display.print_head(app.stack)
-    #
-    # def o(self, app: 'mw.app.App', time = None):
-    #     "Set out point"
-    #     if app.stack.top:
-    #         new_time = app.stack.top.cursor
-    #         if time:
-    #             new_time = parse_numeric(app.stack.top.out_point or 0, time)
-    #         
-    #         app.stack.top.out_point = Milliseconds(new_time)
-    #         app.display.print_head(app.stack)
 
     def ci(self, app: 'mw.app.App'):
         "Clear in point"
