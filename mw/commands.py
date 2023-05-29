@@ -1,11 +1,71 @@
 import inspect
 from copy import deepcopy
 from typing import List, Callable, Optional
-import sys, os
 
 import mw
-from mw.stack import StackFrame
 from mw.types import Milliseconds
+
+from parsimonious.grammar import Grammar
+from parsimonious import NodeVisitor
+
+command_grammar = Grammar(
+    r"""
+    command = number? ("," number)? (sep? action arglist)? 
+    arglist = (sep argument)*
+    argument = (quoted / word)
+    quoted = quote literal quote
+    action = ~r"[A-z]+[A-z0-9\-]*"
+    number = ~r"[\d]+"
+    word = ~r"\S+"
+    quote = "\""
+    literal = ~r"[^\"]*"
+    sep = ~r"\s+"
+    """)
+
+class CommandParser(NodeVisitor):
+    def visit_command(self, _, visited_children):
+        start_part, end_part, imperative_part = visited_children
+
+        retval = {}
+        
+        for start in start_part:
+            retval['in_addr'] = start
+
+        for end in end_part:
+            _, retval['out_addr'] = end
+
+        for imperative in imperative_part:
+            _, retval['action'], arg_list = imperative
+            retval['arguments'] = arg_list
+ 
+        return retval
+    
+    def visit_arglist(self, _, visited_children) -> List[str]:
+        repeating_args = visited_children
+
+        retval = []
+        for arg_form in repeating_args:
+            _, arg = arg_form
+            retval.append(arg[0])
+
+        return retval
+
+    def visit_number(self, node, _) -> int:
+        return int(node.text)
+
+    def visit_action(self, node, _) -> str:
+        return node.text
+
+    def visit_word(self, node, _) -> str:
+        return node.text
+
+    def visit_quoted(self, _, visited_children) -> str:
+        _, word, _ = visited_children
+        return word.text
+
+    def generic_visit(self, node, visited_children):
+        return visited_children or node
+
 
 def parse_numeric(base_value: int, val: str):
     """
