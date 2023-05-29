@@ -5,8 +5,10 @@ from typing import List, Callable, Optional
 import mw
 from mw.types import Milliseconds
 
+from parsimonious.exceptions import IncompleteParseError
 from parsimonious.grammar import Grammar
 from parsimonious import NodeVisitor
+
 
 command_grammar = Grammar(
     r"""
@@ -15,7 +17,7 @@ command_grammar = Grammar(
     argument = (quoted / word)
     quoted = quote literal quote
     action = ~r"[A-z]+[A-z0-9\-]*"
-    number = ~r"[\d]+"
+    number = ~r"-?[\d]+"
     word = ~r"\S+"
     quote = "\""
     literal = ~r"[^\"]*"
@@ -92,14 +94,50 @@ class CommandHandler:
     The help() method iterates through all the "normal" named attributes on the class 
     and prints the docstring for each as the help text.
     """
-    def _handle_command(self, app, words): 
-        if len(words) > 0 and hasattr(self, words[0]):
-            try:
-                getattr(self, words[0])(app, *words[1:])
-            except TypeError:
-                print("Error: incorrect parameter count to command")
-        else:
-            self.help(app)
+    _command_in: Milliseconds | None
+    _command_out: Milliseconds | None
+
+    def __init__(self):
+        self._parser_grammar = command_grammar
+        self._parser_visitor = CommandParser()
+        
+    def _handle_command(self, app: 'mw.app.App', command: str): 
+        self._command_in = None
+        self._command_out = None
+        
+        try: 
+            command_dict = self._parser_visitor.visit(self._parser_grammar.parse(command))
+        except IncompleteParseError as e:
+            print(f"Error: Command could not be parsed.")
+            return
+        
+        if app.stack.top is not None:
+            self._command_in = app.normalize_command_time(
+                command_dict.get('in_addr', app.stack.top.in_point or 0))
+
+            self._command_out = app.normalize_command_time(
+                command_dict.get('out_addr', app.stack.top.out_point or -1))
+            
+            if 'in_addr' in command_dict:
+                app.stack.top.in_point = self._command_in
+
+            if 'out_addr' in command_dict:
+                app.stack.top.out_point = self._command_out
+
+            if self._command_in is not None and self._command_out is not None and self._command_out < self._command_in:
+                self._command_in, self._command_out = self._command_out, self._command_in
+
+        if 'action' in command_dict.keys():
+            if command_dict['action'] in self._available_commands():
+
+                try:
+                    args = command_dict.get('arguments', [])
+                    getattr(self, command_dict['action'])(app, *args)
+                except TypeError:
+                    print(f"Error: action {command_dict['action']} called with incorrect argument list.")
+            else:
+                print(f"Error: action {command_dict['action']} is not recognized.")
+
 
     def _available_commands(self) -> List[str]:
         return [f for f in dir(self) if not f.startswith("_")]
@@ -139,46 +177,46 @@ class CommandHandler:
         "Print the stack"
         app.display.print_stack(app.stack)
 
-    def cmills(self, app: 'mw.app.App', pos: str = "0"):
-        "Set/nudge cursor position in millis"
-        if app.stack.top:
-            app.stack.top.cursor = Milliseconds(parse_numeric(app.stack.top.cursor, pos))
-            app.stack.top.cursor = Milliseconds(min(app.stack.top.cursor, len(app.stack.top.segment)))
-            app.stack.top.cursor = Milliseconds(max(app.stack.top.cursor, 0))
-            app.display.print_head(app.stack)
+    # def cmills(self, app: 'mw.app.App', pos: str = "0"):
+    #     "Set/nudge cursor position in millis"
+    #     if app.stack.top:
+    #         app.stack.top.cursor = Milliseconds(parse_numeric(app.stack.top.cursor, pos))
+    #         app.stack.top.cursor = Milliseconds(min(app.stack.top.cursor, len(app.stack.top.segment)))
+    #         app.stack.top.cursor = Milliseconds(max(app.stack.top.cursor, 0))
+    #         app.display.print_head(app.stack)
 
-    def cend(self, app: 'mw.app.App', pos: str = "0"):
-        "Set cursor relative to the end of sound"
-        if app.stack.top:
-            val = parse_numeric(0, pos)
-            new_time = len(app.stack.top.segment) - abs(val)
-            app.stack.top.cursor = Milliseconds(new_time)
-        
-        app.display.print_head(app.stack)
+    # def cend(self, app: 'mw.app.App', pos: str = "0"):
+    #     "Set cursor relative to the end of sound"
+    #     if app.stack.top:
+    #         val = parse_numeric(0, pos)
+    #         new_time = len(app.stack.top.segment) - abs(val)
+    #         app.stack.top.cursor = Milliseconds(new_time)
+    #     
+    #     app.display.print_head(app.stack)
 
     def show(self, app: 'mw.app.App'):
         "Show the current sound"
         app.display.print_head(app.stack)
 
-    def i(self, app: 'mw.app.App', time = None):
-        "Set in point"
-        if app.stack.top:
-            new_time = app.stack.top.cursor
-            if time:
-                new_time = parse_numeric(app.stack.top.in_point or 0, time)
-            
-            app.stack.top.in_point = Milliseconds(new_time)
-            app.display.print_head(app.stack)
-
-    def o(self, app: 'mw.app.App', time = None):
-        "Set out point"
-        if app.stack.top:
-            new_time = app.stack.top.cursor
-            if time:
-                new_time = parse_numeric(app.stack.top.out_point or 0, time)
-            
-            app.stack.top.out_point = Milliseconds(new_time)
-            app.display.print_head(app.stack)
+    # def i(self, app: 'mw.app.App', time = None):
+    #     "Set in point"
+    #     if app.stack.top:
+    #         new_time = app.stack.top.cursor
+    #         if time:
+    #             new_time = parse_numeric(app.stack.top.in_point or 0, time)
+    #         
+    #         app.stack.top.in_point = Milliseconds(new_time)
+    #         app.display.print_head(app.stack)
+    #
+    # def o(self, app: 'mw.app.App', time = None):
+    #     "Set out point"
+    #     if app.stack.top:
+    #         new_time = app.stack.top.cursor
+    #         if time:
+    #             new_time = parse_numeric(app.stack.top.out_point or 0, time)
+    #         
+    #         app.stack.top.out_point = Milliseconds(new_time)
+    #         app.display.print_head(app.stack)
 
     def ci(self, app: 'mw.app.App'):
         "Clear in point"
@@ -231,12 +269,14 @@ class CommandHandler:
     def crop(self, app: 'mw.app.App',):
         "Crop the sound to the in and out points"
         if app.stack.top:
-            app.stack.top.crop_to_selection()
+            assert self._command_in is not None
+            assert self._command_out is not None
+            app.stack.top.crop(self._command_in, self._command_out)
         
         app.display.print_head(app.stack)
 
     def silence(self, app:'mw.app.App', dur: str):
-        "Insert silence at cursor"
+        "Insert silence at in-point"
         if dur.isdigit():
             if app.stack.top:
                 at = app.stack.top.cursor
@@ -311,9 +351,7 @@ class CommandHandler:
         app.display.print_head(app.stack)
 
     def export(self, app: 'mw.app.App', name: str = "out.wav"):
+        "Export audio as a wav file"
         if app.stack.top:
             app.stack.top.export(name)
-
-
-
 

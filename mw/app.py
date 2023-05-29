@@ -3,6 +3,8 @@ from mw.display import Display
 from mw.commands import CommandHandler
 
 from os.path import join, split
+
+from mw.types import Milliseconds
 # from typing import Optional
 
 try:
@@ -48,13 +50,22 @@ class App:
         else:
             return input(f"- > ")
 
-    def handle_command_line(self, command):
-        if len(command) == 0:
-            return
+    def handle_command_line(self, command: str):
+        self.command_handler._handle_command(self, command)
 
-        words = command.split()
-
-        self.command_handler._handle_command(self, words)
+    def normalize_command_time(self, addr: int) -> Milliseconds | None:
+        if self.stack.top is not None:
+            sound_length = Milliseconds(len(self.stack.top.segment) )
+            if 0 <= addr <= sound_length:
+                return Milliseconds(addr)
+            elif addr > sound_length:
+                return sound_length
+            elif addr < 0:
+                from_end = abs(addr)
+                from_end = min(from_end, sound_length)
+                return Milliseconds(sound_length - from_end)
+        else:
+            return None
 
     def run(self):
         # print("Type \"q\" to quit.")

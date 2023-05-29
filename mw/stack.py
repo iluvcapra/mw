@@ -39,9 +39,9 @@ class StackFrame:
         self.view_start = Milliseconds(0)
         self.view_end = Milliseconds(len(self.segment))
 
-    def crop_to_selection(self):
-        self.crop(self.in_point or Milliseconds(0), 
-                  self.out_point or Milliseconds(len(self.segment)))
+    # def crop_to_selection(self):
+    #     self.crop(self.in_point or Milliseconds(0), 
+    #               self.out_point or Milliseconds(len(self.segment)))
 
     def insert_silence(self, duration: Milliseconds, at: Milliseconds):
         assert at < len(self.segment), "Insertion point past end of sound"
