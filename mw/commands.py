@@ -3,7 +3,7 @@ from copy import deepcopy
 from typing import List, Callable, Optional
 
 import mw
-from mw.types import Milliseconds
+from mw.types import Decibels, Milliseconds
 
 from parsimonious.exceptions import IncompleteParseError
 from parsimonious.grammar import Grammar
@@ -12,21 +12,22 @@ from parsimonious import NodeVisitor
 
 command_grammar = Grammar(
     r"""
-    command = number? ("," number)? (sep? action arglist)? 
+    command = number? ("," number)? (sep? action arglist)? (sep* "#" comment)? 
     arglist = (sep argument)*
     argument = (quoted / word)
     quoted = quote literal quote
     action = ~r"[A-z]+[A-z0-9\-]*"
     number = ~r"-?[\d]+"
-    word = ~r"\S+"
+    word = ~r"[^\s#]+"
     quote = "\""
-    literal = ~r"[^\"]*"
+    comment = ~r".*"
+    literal = ~r"[^\"#]*"
     sep = ~r"\s+"
     """)
 
 class CommandParser(NodeVisitor):
     def visit_command(self, _, visited_children):
-        start_part, end_part, imperative_part = visited_children
+        start_part, end_part, imperative_part, _ = visited_children
 
         retval = {}
         
@@ -102,7 +103,7 @@ class CommandHandler:
         self._parser_visitor = CommandParser()
     
     def _handle_command(self, app: 'mw.app.App', command: str): 
-
+        
         try: 
             command_dict = self._parser_visitor.visit(self._parser_grammar.parse(command))
         except IncompleteParseError as e:
@@ -248,7 +249,6 @@ class CommandHandler:
         
         app.display.print_head(app.stack)
 
-
     def split(self, app:'mw.app.App'):
         "Split sound"
         if app.stack.top:
@@ -276,7 +276,9 @@ class CommandHandler:
     
     def normalize(self, app:'mw.app.App', level = "0.0"):
         if app.stack.top:
-            app.stack.top.normalize(self._effective_in, self._effective_out, float(level))
+            app.stack.top.normalize(self._effective_in, 
+                                    self._effective_out, 
+                                    Decibels(float(level)))
 
         app.display.print_head(app.stack)
 

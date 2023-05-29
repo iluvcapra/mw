@@ -20,6 +20,9 @@ def main():
     parser = optparse.OptionParser()
     parser.add_option("-e", "--exec", help="Execute command", 
                       action="append", metavar="COMMAND")
+    parser.add_option("-f", "--file", help="Execute comand file",
+                      action="append", metavar="FILE")
+
     (options, files) = parser.parse_args()
     
     app = App()
@@ -31,6 +34,12 @@ def main():
         audio = pydub.AudioSegment.from_file(file)
         app.stack.push_sound(audio)
     
+    for com_file in options.file or []:
+        print(f"Executing commands in {com_file}...")
+        with open(com_file, "r") as f:
+            for line in f.readlines():
+                app.handle_command_line(line)
+
     for command in options.exec or []:
         app.handle_command_line(command)
 

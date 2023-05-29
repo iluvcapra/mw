@@ -4,11 +4,30 @@ mw \- audio sample editor
 .SH SYNOPSIS
 .SY mw
 .RI "[\-e " COMMAND "]"
-.RI "[" "FILE ..." "]"
+.RI "[\-f " COMMAND-FILE "]" 
+.RI "[" "SOUND-FILE ..." "]"
 .SH DESCRIPTION
 .B mw
 is an interactive, text-mode audio sample editor. Audio files provided as arguments
 on the command line can be inspected, edited, mixed and exported.
+.B mw
+can be thought of as a kind of 
+.BR ed "(1),"
+except for editing audio sample vectors instead of text files, and with functions 
+tailored to the specifc case of editing sample vectors.
+.SH OPTIONS
+.IP "\-e COMMAND, \-\-exec=COMMAND"
+Execute 
+.I COMMAND
+after loading the sound file arguments onto the stack.
+Can be used multiple times to run multiple commands.
+.IP "\-f COMMAND-FILE, \-\-file=COMMAND-FILE"
+Execute commands from 
+.IR COMMAND-FILE ","
+one line per command.
+.IP "\-h, \-\-help"
+Print brief help.
+.SH DETAILED DESCRIPTION
 .SS MOTIVATION
 .B mw
 is an audio sample editor, designed to edit individual, contiguous sounds in a manner 
@@ -18,12 +37,6 @@ similar to
 runs fully in text mode on a terminal, and allows viewing and manipulating audio data 
 without recourse to a GUI; this can be useful to users who can't access a GUI in their
 environment for whatever reason, or as part of a broader text-mode workflow.
-.PP
-.B mw
-can be thought of as a kind of 
-.BR ed "(1),"
-except for editing audio sample vectors instead of text files and with functions 
-tailored to the specifc case of editing sample vectors.
 .SS THEORY OF OPERATION
 .B mw
 accepts filenames as arguments from the command line and pushes these sounds onto an 
@@ -47,15 +60,6 @@ Each individual sound on the stack is contained in a
 frame
 which also maintains editing context pertinent to the sound, such as the location of the
 cursor and selection in- and out-points.
-.SH OPTIONS
-.IP "\-e COMMAND, \-\-exec=COMMAND"
-Execute 
-.I COMMAND
-after loading 
-.IR FILE "s."
-Can be used multiple times to run multiple commands.
-.IP "\-h, \-\-help"
-Print brief help.
 .SH COMMANDS AND ACTIONS
 
 The command prompt in 
@@ -87,6 +91,9 @@ the beginning of the sound is used. When
 .I end
 is omitted from a command, the sound out-point is used, and if it is not set,
 the end of the sound is used.
+.PP 
+Commands can be followed by a "#" symbol and free comments, this may be useful
+for people writing scripts.
 .SS EXAMPLES
 .IP 0,100bloop
 Bloop the first 100 milliseconds of the sound.
@@ -164,6 +171,10 @@ Prepends the 2nd-highest sound on the stack to the end of the top sound on the s
 Loops the selection
 .I count
 times.
+.IP normalize [db]
+Normalizes the sound between the in and out points to 
+.I db 
+decibels. The default is 0.0.
 .IP fadein
 Applies a linear fade to the sound, increasing from the beginning of the sound to the 
 cursor.
