@@ -89,3 +89,15 @@ class TestCommandParser(unittest.TestCase):
         except:
             assert False, "Parsing an empty line raised an exception"
 
+    def test_comments(self):
+        tree = command_grammar.parse("a bc #comment line")
+        result = self.p.visit(tree)
+
+        self.assertEqual(result["action"], "a")
+        self.assertEqual(result['arguments'], ["bc"])
+
+        tree = command_grammar.parse("# comment line")
+        result = self.p.visit(tree)
+
+        self.assertEqual(result, {})
+
