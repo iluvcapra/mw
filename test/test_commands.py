@@ -83,7 +83,10 @@ class TestCommands(unittest.TestCase):
 
 
     def test_empty(self):
-        tree = command_grammar.parse("")
-        result = self.p.visit(tree)
-        self.assertEqual(result, {})
+        try:
+            tree = command_grammar.parse("")
+            result = self.p.visit(tree)
+            self.assertEqual(result, {})
+        except:
+            assert False, "Parsing an empty line raised an exception"
 
