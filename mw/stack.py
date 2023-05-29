@@ -1,8 +1,9 @@
 # from numpy import who
 from pydub import AudioSegment
+from pydub.effects import normalize
 from pydub.playback import play
 
-from mw.types import Milliseconds
+from mw.types import Decibels, Milliseconds
 
 from typing import List, Optional, cast 
 
@@ -58,6 +59,19 @@ class StackFrame:
         self.view_start = Milliseconds(0)
         self.view_end = Milliseconds(len(self.segment))
     
+    def normalize(self, start: Milliseconds, end: Milliseconds, level: Decibels):
+        assert 0 <= start < len(self.segment)
+        assert 0 <= end < len(self.segment)
+        assert start < end
+
+        a = cast(AudioSegment, self.segment[0:start])
+        b = cast(AudioSegment, self.segment[start:end])
+        c = cast(AudioSegment, self.segment[end:])
+        b = normalize(b, level)
+        
+        self.segment = a + b + c
+
+
     def fade_in(self, to: Milliseconds):
         assert (0 <= to < len(self.segment))
         self.segment = self.segment.fade_in(to)

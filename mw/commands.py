@@ -273,6 +273,13 @@ class CommandHandler:
         if app.stack.top:
             app.stack.loop(count=int(count))
         app.display.print_head(app.stack)
+    
+    def normalize(self, app:'mw.app.App', level = "0.0"):
+        if app.stack.top:
+            app.stack.top.normalize(self._effective_in, self._effective_out, float(level))
+
+        app.display.print_head(app.stack)
+
 
     def fadein(self, app:'mw.app.App'):
         "Fade in from cilp start to in point"

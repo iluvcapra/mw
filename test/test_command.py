@@ -28,6 +28,4 @@ class TestCommands(TestCase):
     def test_help(self):
         self.command_handler.help(self.mock_app)
 
-
-     
-        
+ 
