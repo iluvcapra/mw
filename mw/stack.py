@@ -9,7 +9,7 @@ from typing import List, Optional, cast
 
 class StackFrame: 
     segment: AudioSegment
-    cursor: Milliseconds
+    # cursor: Milliseconds
     in_point: Optional[Milliseconds]
     out_point: Optional[Milliseconds]
     view_start: Milliseconds
@@ -17,7 +17,7 @@ class StackFrame:
 
     def __init__(self, segment: AudioSegment):
         self.segment = segment
-        self.cursor = Milliseconds(0)
+        # self.cursor = Milliseconds(0)
         self.in_point = None
         self.out_point = None
         self.view_start = Milliseconds(0)
@@ -35,7 +35,7 @@ class StackFrame:
         self.segment = cast(AudioSegment, self.segment[start:end])
         self.in_point = None
         self.out_point = None
-        self.cursor = Milliseconds(0)
+        # self.cursor = Milliseconds(0)
         self.view_start = Milliseconds(0)
         self.view_end = Milliseconds(len(self.segment))
 

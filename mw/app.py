@@ -46,7 +46,7 @@ class App:
                 selection.append(f"{self.stack.top.out_point}]")
             
             selection = "→".join(selection)
-            return input(f"{self.stack.top.cursor}ms {selection}> ")
+            return input(f"{selection}> ")
         else:
             return input(f"- > ")
 
