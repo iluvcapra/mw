@@ -1,4 +1,3 @@
-from typing import assert_never
 import unittest
 from mw.commands import CommandParser, command_grammar
 
