@@ -94,38 +94,39 @@ class CommandHandler:
     The help() method iterates through all the "normal" named attributes on the class 
     and prints the docstring for each as the help text.
     """
-    _command_in: Optional[Milliseconds]
-    _command_out: Optional[Milliseconds]
+    _effective_in: Optional[Milliseconds]
+    _effective_out: Optional[Milliseconds]
 
     def __init__(self):
         self._parser_grammar = command_grammar
         self._parser_visitor = CommandParser()
-        
+    
     def _handle_command(self, app: 'mw.app.App', command: str): 
-        self._command_in = None
-        self._command_out = None
-        
+
         try: 
             command_dict = self._parser_visitor.visit(self._parser_grammar.parse(command))
         except IncompleteParseError as e:
             print(f"Error: Command could not be parsed.")
             return
+
+        self._effective_in = None
+        self._effective_out = None        
         
         if app.stack.top is not None:
-            self._command_in = app.normalize_command_time(
+            self._effective_in = app.normalize_command_time(
                 command_dict.get('in_addr', app.stack.top.in_point or 0))
 
-            self._command_out = app.normalize_command_time(
+            self._effective_out = app.normalize_command_time(
                 command_dict.get('out_addr', app.stack.top.out_point or -1))
             
             if 'in_addr' in command_dict:
-                app.stack.top.in_point = self._command_in
+                app.stack.top.in_point = self._effective_in
 
             if 'out_addr' in command_dict:
-                app.stack.top.out_point = self._command_out
+                app.stack.top.out_point = self._effective_out
 
-            if self._command_in is not None and self._command_out is not None and self._command_out < self._command_in:
-                self._command_in, self._command_out = self._command_out, self._command_in
+            if self._effective_in is not None and self._effective_out is not None and self._effective_out < self._effective_in:
+                self._effective_in, self._effective_out = self._effective_out, self._effective_in
 
         if 'action' in command_dict.keys():
             if command_dict['action'] in self._available_commands():
@@ -171,8 +172,7 @@ class CommandHandler:
     def license(self, app: 'mw.app.App'):
         "Print the license"
         print(app.license())
-
-  
+ 
     def stack(self, app: 'mw.app.App'):
         "Print the stack"
         app.display.print_stack(app.stack)
@@ -232,27 +232,28 @@ class CommandHandler:
     def crop(self, app: 'mw.app.App',):
         "Crop the sound to the in and out points"
         if app.stack.top:
-            assert self._command_in is not None
-            assert self._command_out is not None
-            app.stack.top.crop(self._command_in, self._command_out)
+            assert self._effective_in is not None
+            assert self._effective_out is not None
+            app.stack.top.crop(self._effective_in, self._effective_out)
         
         app.display.print_head(app.stack)
 
-    def silence(self, app:'mw.app.App', dur: str):
+    def silence(self, app:'mw.app.App'):
         "Insert silence at in-point"
-        if dur.isdigit():
-            if app.stack.top:
-                at = app.stack.top.cursor
-                app.stack.top.insert_silence(Milliseconds(int(dur)), at)
-            
-            app.display.print_head(app.stack)
-        else:
-            print(f"Parse error: \"{dur}\" is not a number")
+        if app.stack.top:
+            assert self._effective_out is not None
+            assert self._effective_in is not None
+            app.stack.top.insert_silence(Milliseconds(self._effective_out - self._effective_in), 
+                                         self._effective_in)
+        
+        app.display.print_head(app.stack)
+
 
     def split(self, app:'mw.app.App'):
         "Split sound"
         if app.stack.top:
-            app.stack.split()
+            assert self._effective_in is not None
+            app.stack.split(self._effective_in)
         app.display.print_stack(app.stack)
 
     def append(self, app:'mw.app.App'):
@@ -274,16 +275,18 @@ class CommandHandler:
         app.display.print_head(app.stack)
 
     def fadein(self, app:'mw.app.App'):
-        "Fade in from cilp start to cursor"
+        "Fade in from cilp start to in point"
         if app.stack.top:
-            app.stack.top.fade_in(app.stack.top.cursor)
+            assert self._effective_in is not None
+            app.stack.top.fade_in(self._effective_in)
 
         app.display.print_head(app.stack)
 
     def fadeout(self, app:'mw.app.App'):
-        "Fade out from clip start to cursor"
+        "Fade out from out point to end of file"
         if app.stack.top:
-            app.stack.top.fade_out(app.stack.top.cursor)
+            assert self._effective_out is not None 
+            app.stack.top.fade_out(self._effective_out)
         
         app.display.print_head(app.stack)
 
@@ -306,10 +309,12 @@ class CommandHandler:
 
     def bloop(self, app: 'mw.app.App'):
         "Replace audio in selection with silence"
-        if app.stack.top and (app.stack.top.in_point is not None 
-            or app.stack.top.out_point is not None):
+        if app.stack.top:
+            assert self._effective_in is not None
+            assert self._effective_out is not None
 
-            app.stack.top.bloop()
+            app.stack.top.bloop(Milliseconds(self._effective_out - self._effective_in), 
+                                self._effective_in)
 
         app.display.print_head(app.stack)
 

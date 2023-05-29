@@ -87,7 +87,7 @@ class Display:
             for i in range(in_pos + 1, out_pos):
                 slug[i] = "⎯"
 
-        slug[self.print_width_for_length(entry.cursor, view_length)] = "⬆"
+        # slug[self.print_width_for_length(entry.cursor, view_length)] = "⬆"
         print("".join(slug))
 
     def show_view_info(self):

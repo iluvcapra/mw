@@ -1,7 +1,7 @@
 import unittest
 from mw.commands import CommandParser, command_grammar
 
-class TestCommands(unittest.TestCase):
+class TestCommandParser(unittest.TestCase):
    
     def setUp(self) -> None:
         self.p = CommandParser()

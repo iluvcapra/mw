@@ -48,19 +48,7 @@ class StackFrame:
         self.view_start = Milliseconds(0)
         self.view_end = Milliseconds(len(self.segment))
 
-    def bloop(self, duration: Optional[Milliseconds] = None, at: Optional[Milliseconds] = None):
-        if duration is None:
-            duration = Milliseconds(
-                (self.out_point or len(self.segment)) - 
-                (self.in_point or Milliseconds(0))
-                                    )
-
-        if at is None:
-            at = self.in_point or Milliseconds(0)
-
-        if at is None or duration is None:
-            return
-
+    def bloop(self, duration: Milliseconds, at: Milliseconds):
         assert at + duration < len(self.segment)
         a = self.segment[0:at]
         b = self.segment[at + duration:]
@@ -120,10 +108,9 @@ class Stack:
         self.entries.append(StackFrame(segment=segment))
 
 
-    def split(self):
+    def split(self, at: Milliseconds):
         assert self.top is not None, "No sound on stack"
         to_split = self.top.segment
-        at = self.top.cursor
         a = cast(AudioSegment, to_split[0:at])
         b = cast(AudioSegment, to_split[at:])
         self.entries.pop()
