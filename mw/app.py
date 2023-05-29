@@ -5,7 +5,7 @@ from mw.commands import CommandHandler
 from os.path import join, split
 
 from mw.types import Milliseconds
-# from typing import Optional
+from typing import Optional
 
 try:
     import gnureadline as readline
@@ -53,7 +53,7 @@ class App:
     def handle_command_line(self, command: str):
         self.command_handler._handle_command(self, command)
 
-    def normalize_command_time(self, addr: int) -> Milliseconds | None:
+    def normalize_command_time(self, addr: int) -> Optional[Milliseconds]:
         if self.stack.top is not None:
             sound_length = Milliseconds(len(self.stack.top.segment) )
             if 0 <= addr <= sound_length:

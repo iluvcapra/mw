@@ -94,8 +94,8 @@ class CommandHandler:
     The help() method iterates through all the "normal" named attributes on the class 
     and prints the docstring for each as the help text.
     """
-    _command_in: Milliseconds | None
-    _command_out: Milliseconds | None
+    _command_in: Optional[Milliseconds]
+    _command_out: Optional[Milliseconds]
 
     def __init__(self):
         self._parser_grammar = command_grammar
