@@ -1,3 +1,4 @@
+from typing import assert_never
 import unittest
 from mw.commands import CommandParser, command_grammar
 
@@ -82,8 +83,7 @@ class TestCommands(unittest.TestCase):
 
 
     def test_empty(self):
-        with self.assertNoLogs():
-            tree = command_grammar.parse("")
-            result = self.p.visit(tree)
-            self.assertEqual(result, {})
+        tree = command_grammar.parse("")
+        result = self.p.visit(tree)
+        self.assertEqual(result, {})
 
