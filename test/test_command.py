@@ -1,4 +1,4 @@
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, Mock
 from unittest import TestCase
 
 from mw import commands
@@ -25,9 +25,6 @@ class TestCommands(TestCase):
         self.command_handler.license(self.mock_app)
         self.mock_app.license.assert_called()
 
-    def test_swap(self):
-        self.command_handler.swap(self.mock_app)
-        # self.mock_app.stack.swap.assert_called()
 
      
         

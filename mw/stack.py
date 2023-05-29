@@ -107,7 +107,6 @@ class Stack:
         print(f"Pushing audio ({len(segment)} ms) onto stack...")
         self.entries.append(StackFrame(segment=segment))
 
-
     def split(self, at: Milliseconds):
         assert self.top is not None, "No sound on stack"
         to_split = self.top.segment
@@ -117,7 +116,6 @@ class Stack:
         self.entries.append(StackFrame(a))
         self.entries.append(StackFrame(b))
 
-   
     def append(self):
         assert len(self.entries) > 1
 
@@ -125,7 +123,6 @@ class Stack:
         b = self.entries.pop().segment
         self.entries.append(StackFrame(a + b))
 
-        
     def prepend(self):
         assert len(self.entries) > 1
 
