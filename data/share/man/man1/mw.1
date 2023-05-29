@@ -97,7 +97,7 @@ for people writing scripts.
 .SS EXAMPLES
 .IP 0,100bloop
 Bloop the first 100 milliseconds of the sound.
-.IP 100,-100 crop
+.IP "100,-100 crop"
 Crop the first and last 100 milliseconds off the sound.
 .IP 0,-1 
 Set the selection in- and out- points to the beginning and end of the sound.
@@ -153,12 +153,12 @@ may be either positive or negative and defaults to "1".
 Crops the sound. Samples prior to the selection in-point and after the selection out-point
 are deleted. If either of these is not specified, the beginning and end of the sound
 are the default.
-.IP "silence [dur]
+.IP silence
 Inserts silence of length
 .I dur
-milliseconds at the cursor.
+milliseconds at the in-point to the out-point, shifting the audio between back.
 .IP split
-Splits the sound at the cursor position. The current sound is popped off the stack. 
+Splits the sound at the in-point. The current sound is popped off the stack. 
 Two new sounds are pushed onto the stack, the first made of the samples preceding the
 cursor and the second of samples following the cursor.
 .IP append
@@ -167,19 +167,19 @@ Appends the 2nd-highest sound on the stack to the end of the top sound on the st
 Prepends the 2nd-highest sound on the stack to the end of the top sound on the stack. 
 (Reverses a 
 .IR split ")."
-.IP loop [count]
+.IP "loop [count]"
 Loops the selection
 .I count
 times.
-.IP normalize [db]
+.IP "normalize [db]"
 Normalizes the sound between the in and out points to 
 .I db 
 decibels. The default is 0.0.
 .IP fadein
 Applies a linear fade to the sound, increasing from the beginning of the sound to the 
-cursor.
+in-point.
 .IP fadeout
-Applies a linear fade to the sound, decreasing from the cursor to the end of the sound.
+Applies a linear fade to the sound, decreasing from the out-point to the end of the sound.
 .IP play
 Plays the sound.
 .IP length
@@ -189,7 +189,7 @@ Bounces or mixes the top two sounds on the stack together, creating a new sound 
 placed on the top of the stack.
 .IP bloop
 Silences the samples between the insertion in-point and out-point.
-.IP export [name]
+.IP "export [name]"
 Exports the sound as a wav file. If no
 .I name
 is provided, the default is 
