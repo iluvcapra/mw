@@ -23,7 +23,7 @@ dependencies = [
   "numpy ~= 1.24.3",
   "parsimonious ~= 0.10.0",
   "pydub ~= 0.25.1",
-  "apeek ~= 0.1.0",
+  "apeek ~= 0.1.1",
   "gnureadline ~= 8.1.2"
 ]
 keywords = [

@@ -132,11 +132,11 @@ class CommandHandler:
         if 'action' in command_dict.keys():
             if command_dict['action'] in self._available_commands():
 
-                try:
-                    args = command_dict.get('arguments', [])
-                    getattr(self, command_dict['action'])(app, *args)
-                except TypeError:
-                    print(f"Error: action {command_dict['action']} called with incorrect argument list.")
+                # try:
+                args = command_dict.get('arguments', [])
+                getattr(self, command_dict['action'])(app, *args)
+                # except TypeError:
+                #     print(f"Error: action {command_dict['action']} called with incorrect argument list.")
             else:
                 print(f"Error: action {command_dict['action']} is not recognized.")
 
@@ -249,6 +249,10 @@ class CommandHandler:
         
         app.display.print_head(app.stack)
 
+    def new(self, app:'mw.app.App', length = "1000"):
+        "Creates a new sound of [length] milliseconds"
+        app.stack.create_new(length=Milliseconds(int(length)))
+
     def split(self, app:'mw.app.App'):
         "Split sound"
         if app.stack.top:
@@ -276,6 +280,9 @@ class CommandHandler:
     
     def normalize(self, app:'mw.app.App', level = "0.0"):
         if app.stack.top:
+            assert self._effective_in is not None
+            assert self._effective_out is not None
+
             app.stack.top.normalize(self._effective_in, 
                                     self._effective_out, 
                                     Decibels(float(level)))

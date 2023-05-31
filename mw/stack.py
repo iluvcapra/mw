@@ -121,6 +121,10 @@ class Stack:
         print(f"Pushing audio ({len(segment)} ms) onto stack...")
         self.entries.append(StackFrame(segment=segment))
 
+    def create_new(self, length: Milliseconds):
+        n = StackFrame(segment=AudioSegment.silent(length, 48000))
+        self.entries.append(n)
+
     def split(self, at: Milliseconds):
         assert self.top is not None, "No sound on stack"
         to_split = self.top.segment

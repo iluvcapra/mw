@@ -32,7 +32,7 @@ class Display:
         
         bins = self.print_width_for_length(clip_view_length, view_length)
 
-        waveform = WaveformData.create_waveform_data(clip, time_bins=bins)
+        waveform = WaveformData.create_waveform_data(clip, time_bin_count=bins)
         return unicode_waveform(waveform.value_pairs, height=height)
 
     def print_frame(self, index, frame: 'mw.stack.StackFrame', session_length: Milliseconds):
