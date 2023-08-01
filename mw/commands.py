@@ -83,17 +83,18 @@ def parse_numeric(base_value: int, val: str):
 
 class CommandHandler:
     """
-    The command handler implements commands originating from the prompt. The App
-    parses command lines into words and then hands these to the handler's _handle method.
-    The first word is the command name, and a attribute with a matching name is searched in
-    the CommandHandler instance. If a match isn't found, the "help" method is run.
+    The command handler implements commands originating from the prompt. The 
+    App parses command lines into words and then hands these to the handler's 
+    _handle method. The first word is the command name, and a attribute with a 
+    matching name is searched in the CommandHandler instance. If a match isn't 
+    found, the "help" method is run.
 
-    If a match IS found, the corresponding attribute is called, with the App instance
-    passed as the first parameter. If any additional words were present on the command line, 
-    they are passed as strings afterward.
+    If a match IS found, the corresponding attribute is called, with the App 
+    instance passed as the first parameter. If any additional words were 
+    present on the command line, they are passed as strings afterward.
 
-    The help() method iterates through all the "normal" named attributes on the class 
-    and prints the docstring for each as the help text.
+    The help() method iterates through all the "normal" named attributes on the 
+    class and prints the docstring for each as the help text.
     """
     _effective_in: Optional[Milliseconds]
     _effective_out: Optional[Milliseconds]
@@ -105,7 +106,9 @@ class CommandHandler:
     def _handle_command(self, app: 'mw.app.App', command: str): 
         
         try: 
-            command_dict = self._parser_visitor.visit(self._parser_grammar.parse(command))
+            command_dict = self._parser_visitor.visit(
+                self._parser_grammar.parse(command)
+            )
         except IncompleteParseError as e:
             print(f"Error: Command could not be parsed.")
             return
@@ -126,8 +129,11 @@ class CommandHandler:
             if 'out_addr' in command_dict:
                 app.stack.top.out_point = self._effective_out
 
-            if self._effective_in is not None and self._effective_out is not None and self._effective_out < self._effective_in:
-                self._effective_in, self._effective_out = self._effective_out, self._effective_in
+            if self._effective_in is not None \
+                and self._effective_out is not None \
+                and self._effective_out < self._effective_in:
+                self._effective_in, self._effective_out = \
+                self._effective_out, self._effective_in
 
         if 'action' in command_dict.keys():
             if command_dict['action'] in self._available_commands():
@@ -136,9 +142,11 @@ class CommandHandler:
                 args = command_dict.get('arguments', [])
                 getattr(self, command_dict['action'])(app, *args)
                 # except TypeError:
-                #     print(f"Error: action {command_dict['action']} called with incorrect argument list.")
+                #     print(f"Error: action {command_dict['action']} called 
+                #     with incorrect argument list.")
             else:
-                print(f"Error: action {command_dict['action']} is not recognized.")
+                print(f"Error: action {command_dict['action']} " 
+                      f"is not recognized.")
 
 
     def _available_commands(self) -> List[str]:
@@ -146,7 +154,8 @@ class CommandHandler:
 
     def _partial_completion_handler(self) -> Callable[[str, int],Optional[str]]:
         def _impl_autocomplete(partial: str, state: int) -> Optional[str]:
-            possible = [name for name in self._available_commands() if name.startswith(partial)]
+            possible = [name for name in self._available_commands() \
+                if name.startswith(partial)]
             if len(possible) > 0:
                 return possible[state]
             else:
@@ -226,7 +235,8 @@ class CommandHandler:
             num = int(count)
             num = num % len(app.stack.entries)
             for _ in range(num):
-                app.stack.entries = app.stack.entries[-1:] + app.stack.entries[0:-1]
+                app.stack.entries = app.stack.entries[-1:] + \
+                    app.stack.entries[0:-1]
         else:
             print(f"Parse error: \"{count}\" is not a number")
 
@@ -244,8 +254,9 @@ class CommandHandler:
         if app.stack.top:
             assert self._effective_out is not None
             assert self._effective_in is not None
-            app.stack.top.insert_silence(Milliseconds(self._effective_out - self._effective_in), 
-                                         self._effective_in)
+            app.stack.top.insert_silence(
+                Milliseconds(self._effective_out - self._effective_in),  
+                self._effective_in)
         
         app.display.print_head(app.stack)
 
@@ -329,8 +340,10 @@ class CommandHandler:
             assert self._effective_in is not None
             assert self._effective_out is not None
 
-            app.stack.top.bloop(Milliseconds(self._effective_out - self._effective_in), 
-                                self._effective_in)
+            app.stack.top.bloop(
+                Milliseconds(self._effective_out - self._effective_in),                  
+                self._effective_in
+            )
 
         app.display.print_head(app.stack)
 
