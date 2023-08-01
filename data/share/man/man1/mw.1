@@ -8,13 +8,13 @@ mw \- audio sample editor
 .RI "[" "SOUND-FILE ..." "]"
 .SH DESCRIPTION
 .B mw
-is an interactive, text-mode audio sample editor. Audio files provided as arguments
-on the command line can be inspected, edited, mixed and exported.
+is an interactive, text-mode audio sample editor. Audio files provided as 
+arguments on the command line can be inspected, edited, mixed and exported.
 .B mw
 can be thought of as a kind of 
 .BR ed "(1),"
-except for editing audio sample vectors instead of text files, and with functions 
-tailored to the specifc case of editing sample vectors.
+except for editing audio sample vectors instead of text files, and with 
+functions  tailored to the specifc case of editing sample vectors.
 .SH OPTIONS
 .IP "\-e COMMAND, \-\-exec=COMMAND"
 Execute 
@@ -30,36 +30,37 @@ Print brief help.
 .SH DETAILED DESCRIPTION
 .SS MOTIVATION
 .B mw
-is an audio sample editor, designed to edit individual, contiguous sounds in a manner 
-similar to 
+is an audio sample editor, designed to edit individual, contiguous sounds in a 
+manner similar to 
 .BR "BIAS Peak" ", " "Audacity" " or " "iZotope RX" "."
 .B mw
-runs fully in text mode on a terminal, and allows viewing and manipulating audio data 
-without recourse to a GUI; this can be useful to users who can't access a GUI in their
-environment for whatever reason, or as part of a broader text-mode workflow.
+runs fully in text mode on a terminal, and allows viewing and manipulating 
+audio data without recourse to a GUI; this can be useful to users who can't 
+access a GUI in their environment for whatever reason, or as part of a broader 
+text-mode workflow.
 .SS THEORY OF OPERATION
 .B mw
-accepts filenames as arguments from the command line and pushes these sounds onto an 
-internal 
+accepts filenames as arguments from the command line and pushes these sounds 
+onto an internal 
 .BR stack "." 
 Editing functions (such as 
 .IR crop " or " "fadein" ")"
-target the sound at the top of the stack, while commands that combine sounds or create 
-new sounds as a side-effect (like
+target the sound at the top of the stack, while commands that combine sounds or 
+create  new sounds as a side-effect (like
 .IR bounce " or " split ")"
 will either consume sounds from the stack or push new sounds onto the stack.
 .PP 
 The stack
-can be used as a scratch pad to save intermediate versions of a sound being edited, as 
-a storage space for a collection of sounds, or any other purpose, and can be manipulated 
-with dedicated commands such as 
+can be used as a scratch pad to save intermediate versions of a sound being 
+edited, as a storage space for a collection of sounds, or any other purpose, 
+and can be manipulated with dedicated commands such as 
 .IR dup ", " pop ", " swap ", " roll ", etc."
 .PP
 Each individual sound on the stack is contained in a 
 .B
 frame
-which also maintains editing context pertinent to the sound, such as the location of the
-cursor and selection in- and out-points.
+which also maintains editing context pertinent to the sound, such as the 
+location of the cursor and selection in- and out-points.
 .SH COMMANDS AND ACTIONS
 
 The command prompt in 
@@ -80,10 +81,10 @@ used to set the beginning and ending times for an action to act upon. When a
 .I start 
 or 
 .I end 
-are read from the command line, they set the in and out edit points on the active
-sound, which will then be used by a following action. Some actions take additional
-arguments which follow the action, separated by spaces. Double-quotes can be used
-for arguments that contain spaces.
+are read from the command line, they set the in and out edit points on the 
+active sound, which will then be used by a following action. Some actions take 
+additional arguments which follow the action, separated by spaces. 
+Double-quotes can be used for arguments that contain spaces.
 When 
 .I start
 is omitted from a command, the sound in-point is used, and if it is not set,
@@ -107,8 +108,8 @@ Set the selection out-point to 2500 miliseconds, do not change the in-point.
 .BR mw 's
 command prompt supports GNU 
 .BR readline (3)
-for line editing and auto-completion; all of the commands listed here will autocomplete
-with the <Tab> key.
+for line editing and auto-completion; all of the commands listed here will 
+autocomplete with the <Tab> key.
 .SS ACTION LIST
 .IP help
 Prints a list of all command keywords 
@@ -121,9 +122,10 @@ Prints
 .BR mw 's
 license.
 .IP show
-Prints a text graphic of the sound presently at the top of the editor stack. This
-include a waveform bargraph of the sound's amplitiude with respect to time, as well
-as a text representation of the current cursor, in- and out-points.
+Prints a text graphic of the sound presently at the top of the editor stack. 
+This include a waveform bargraph of the sound's amplitiude with respect to 
+time, as well as a text representation of the current cursor, in- and 
+out-points.
 .IP stack
 Prints a text graphic of every sound in the editor stack, from top to bottom, 
 and prints out the length of the current editing session, being the length of
@@ -139,32 +141,36 @@ will use when
 .IR show ing
 a wavform. If no argument is given, defaults to 80.
 .IP dup
-Duplicates the sound at the top of the stack and pushes the duplicate onto the top.
+Duplicates the sound at the top of the stack and pushes the duplicate onto the 
+top.
 .IP swap
 Swaps the top two sounds on the stack.
 .IP pop
 Pops the sound at the top of the stack, deleting it.
 .IP "roll [count]"
-Rolls the stack forward, the top sound is placed at the end and the second sound becomes
+Rolls the stack forward, the top sound is placed at the end and the second 
+sound becomes
 the top sound. The
 .I count
 may be either positive or negative and defaults to "1".
 .IP crop
-Crops the sound. Samples prior to the selection in-point and after the selection out-point
-are deleted. If either of these is not specified, the beginning and end of the sound
-are the default.
+Crops the sound. Samples prior to the selection in-point and after the 
+selection out-point are deleted. If either of these is not specified, the 
+beginning and end of the sound are the default.
 .IP silence
 Inserts silence of length
 .I dur
 milliseconds at the in-point to the out-point, shifting the audio between back.
 .IP split
 Splits the sound at the in-point. The current sound is popped off the stack. 
-Two new sounds are pushed onto the stack, the first made of the samples preceding the
-cursor and the second of samples following the cursor.
+Two new sounds are pushed onto the stack, the first made of the samples 
+preceding the cursor and the second of samples following the cursor.
 .IP append
-Appends the 2nd-highest sound on the stack to the end of the top sound on the stack. 
+Appends the 2nd-highest sound on the stack to the end of the top sound on the 
+stack. 
 .IP prepend 
-Prepends the 2nd-highest sound on the stack to the end of the top sound on the stack. 
+Prepends the 2nd-highest sound on the stack to the end of the top sound on the 
+stack. 
 (Reverses a 
 .IR split ")."
 .IP "loop [count]"
@@ -176,16 +182,18 @@ Normalizes the sound between the in and out points to
 .I db 
 decibels. The default is 0.0.
 .IP fadein
-Applies a linear fade to the sound, increasing from the beginning of the sound to the 
-in-point.
+Applies a linear fade to the sound, increasing from the beginning of the sound 
+to the in-point.
 .IP fadeout
-Applies a linear fade to the sound, decreasing from the out-point to the end of the sound.
+Applies a linear fade to the sound, decreasing from the out-point to the end of 
+the sound.
 .IP play
 Plays the sound.
 .IP length
 Prints the length of the sound.
 .IP bounce
-Bounces or mixes the top two sounds on the stack together, creating a new sound that is
+Bounces or mixes the top two sounds on the stack together, creating a new sound 
+that is
 placed on the top of the stack.
 .IP bloop
 Silences the samples between the insertion in-point and out-point.
@@ -202,7 +210,8 @@ Jamie Hardt <https://github.com/iluvcapra>
 .SH BUGS
 .B mw
 is (optimistically) beta software and has numerous gaps in implementation and 
-performance. Issue submissions, feature requests, pull requests and other contributions 
+performance. Issue submissions, feature requests, pull requests and other 
+contributions 
 are welcome and should be directed at 
 .BR mw 's
 home page on GitHub:
