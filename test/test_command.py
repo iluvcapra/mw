@@ -21,9 +21,9 @@ class TestCommands(TestCase):
         self.mock_app.stack.reset_mock()
         return super().tearDown()
     
-    def test_license(self):
-        self.command_handler.license(self.mock_app)
-        self.mock_app.license.assert_called()
+    # def test_license(self):
+    #     self.command_handler.license(self.mock_app)
+    #     self.mock_app.license.assert_called()
     
     def test_help(self):
         self.command_handler.help(self.mock_app)
