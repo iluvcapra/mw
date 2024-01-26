@@ -179,9 +179,9 @@ class CommandHandler:
                 pnames = "[" + ",".join(pnames) + "]"
                 print(f"{f} {pnames}".ljust(15) + f": {m.__doc__}")
     
-    def license(self, app: 'mw.app.App'):
-        "Print the license"
-        print(app.license())
+    # def license(self, app: 'mw.app.App'):
+    #     "Print the license"
+    #     print(app.license())
  
     def stack(self, app: 'mw.app.App'):
         "Print the stack"
