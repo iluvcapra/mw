@@ -290,6 +290,7 @@ class CommandHandler:
         app.display.print_head(app.stack)
     
     def normalize(self, app:'mw.app.App', level = "0.0"):
+        "Normalize sound to [level] dB"
         if app.stack.top:
             assert self._effective_in is not None
             assert self._effective_out is not None
