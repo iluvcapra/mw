@@ -20,7 +20,7 @@ classifiers = [
     "Programming Language :: Python :: 3.11"
 ]
 dependencies = [
-  "numpy ~= 1.24.3",
+  "numpy ~= 1.26.4",
   "parsimonious ~= 0.10.0",
   "pydub ~= 0.25.1",
   "apeek ~= 0.1.1",
